@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>[object Object] - LogicForeach</title><meta description="刘之帅的个人博客"><meta property="og:type" content="blog"><meta property="og:title" content="LogicForeach"><meta property="og:url" content="logicforeach.github.io"><meta property="og:site_name" content="LogicForeach"><meta property="og:description" content="刘之帅的个人博客"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2020-04-05T14:03:31.957Z"><meta property="article:modified_time" content="2020-04-05T14:03:11.578Z"><meta property="article:author" content="刘之帅"><meta property="article:tag" content="机器学习"><meta property="article:tag" content="矩阵求导"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/LOGO.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"logicforeach.github.io/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/"},"headline":"LogicForeach","image":[],"datePublished":"2020-04-05T14:03:31.957Z","dateModified":"2020-04-05T14:03:11.578Z","author":{"@type":"Person","name":"刘之帅"},"description":"矩阵微分 为了书写方便，常把单个函数对多个变量或者多元函数对单个变量的偏导数写成向量或者矩阵的形式，使其可以当做一个整体处理。矩阵微积分是多元微积分的一种表达方式，即可以使用矩阵和向量来表示因变量每个成分关于自变量每个成分的偏导数。 ——《神经网络与深度学习》  对这句话的理解：  矩阵微分是多元函数求导的一种书写行书，它的结果是各个偏导数的按照某一规定的布局。  矩阵微分的结果是一个矩阵或者向量"}</script><link rel="canonical" href="logicforeach.github.io/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">与我相关</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="GitHub" href="https://github.com/LogicForeach"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-05T14:03:31.957Z" title="2020-04-05T14:03:31.957Z">2020-04-05</time><span class="level-item"><a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/">机器学习杂谈</a></span><span class="level-item">14 分钟 读完 (大约 2070 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">[object Object]</h1><div class="content"><h2 id="矩阵微分"><a href="#矩阵微分" class="headerlink" title="矩阵微分"></a>矩阵微分</h2><blockquote>
+<p>为了书写方便，常把单个函数对多个变量或者多元函数对单个变量的偏导数写成向量或者矩阵的形式，使其可以当做一个整体处理。矩阵微积分是多元微积分的一种表达方式，即可以使用矩阵和向量来表示因变量每个成分关于自变量每个成分的偏导数。 ——《神经网络与深度学习》</p>
+</blockquote>
+<p>对这句话的理解：</p>
+<ol>
+<li><p>矩阵微分是多元函数求导的一种书写行书，它的结果是各个偏导数的按照某一规定的布局。</p>
+</li>
+<li><p>矩阵微分的结果是一个矩阵或者向量，它内部一定包含 <strong>因变量里每一个成分关于自变量里每一个分量的偏导数</strong> ，即</p>
+<script type="math/tex; mode=display">
+ \frac{\partial{\pmb{Y}}}{\partial{\pmb{X}}}=
+  \left[
+  \begin{matrix}
+     &  &  \\
+     & \frac{\partial y_i}{\partial x_j} &  \\
+    &  & 
+   \end{matrix}
+   \right]\\
+   y_i\in\pmb{Y},x_j\in\pmb{X}</script></li>
+<li><p>这里的 $\frac{\partial y_i}{\partial x_j}$ 是一个代表元素， 下标 $i$ 和 $j$ 也可以理解为在分母布局下的第 $i$ 行、第 $j$ 列 ; 在分子布局下的第 $i$ 列、第 $j$ 行，关于分子布局分母布局见下面。</p>
+</li>
+</ol>
+<a id="more"></a>
+<blockquote>
+<p>矩阵微积分的表示通常有两种符号约定： 分子布局（ Numerator Layout）和分母布局 （ Denominator Layout）。两者的区别是一个标量关于一个向量的导数是写成列向量还是行向量 。</p>
+</blockquote>
+<p>例：</p>
+<p>分子布局下</p>
+<script type="math/tex; mode=display">
+\pmb{X}=[x_1,...,x_n]\\
+\frac{\partial{y}}{\partial{\pmb{X}}}=[
+ \begin{matrix}
+   \frac{\partial{y}}{\partial{}x_1},
+   \frac{\partial{y}}{\partial{}x_2},
+   ...,
+   \frac{\partial{y}}{\partial{}x_n}
+  \end{matrix}]</script><p>分母布局下</p>
+<script type="math/tex; mode=display">
+\pmb{X}=[x_1,...,x_n]\\
+\frac{\partial{y}}{\partial{\pmb{X}}}=\left[
+ \begin{matrix}
+   \frac{\partial{y}}{\partial{}x_1}\\
+   \frac{\partial{y}}{\partial{}x_2}\\
+   .\\
+   .\\
+   .\\
+   \frac{\partial{y}}{\partial{}x_n}\\
+  \end{matrix}\right]</script><p>我的理解：</p>
+<ol>
+<li>既然矩阵微分是对偏导数的布局，那么布局就不能随便布局，就得按照一定规律和顺序把它们排布在结果矩阵上，要么结果矩阵中，对于每一行内的所有元素自变量都相同，因变量按下标顺序从头写按到尾，要么对于每一行内的所有元素因变量都相同，自变量按下标顺序从头写按到尾</li>
+<li>如果每一行内的所有元素自变量都相同，因为自变量在分母，所以叫分母布局</li>
+<li>如果每一行内的所有元素因变量都相同，因为因变量在分子，所以叫分子布局</li>
+<li>如上面的分子布局中，分子只有一个，所以结果只有一行，分子保持不变，分母有n个，所以结果有n列；分母布局中，分母有n个，所以有n行，分子只有一个，所以只有一列</li>
+<li>分母布局和分子布局是转置关系，看结果中的每一行每一列是分子不变还是分母不变就知道是啥布局了</li>
+</ol>
+<p>更多例子：</p>
+<p><img src="/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/关于向量(矩阵" alt="image-20200309205909365">求导的理解\image-20200309205909365.png)</p>
+<p><img src="/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/关于向量(矩阵" alt="image-20200309205922941">求导的理解\image-20200309205922941.png)</p>
+<h2 id="矩阵与标量、标量与矩阵"><a href="#矩阵与标量、标量与矩阵" class="headerlink" title="矩阵与标量、标量与矩阵"></a>矩阵与标量、标量与矩阵</h2><p>矩阵参与求导运算，其实就把矩阵拆分成向量组，最后还是再算向量的微分，然后将结果拼在一起。</p>
+<h3 id="标量对矩阵求导"><a href="#标量对矩阵求导" class="headerlink" title="标量对矩阵求导"></a>标量对矩阵求导</h3><script type="math/tex; mode=display">
+\frac{\partial y}{\partial\mathbf{X}}=\begin{bmatrix}\frac{\partial y}{\partial x_{11}} & \frac{\partial y}{\partial x_{12}} & \cdots & \frac{\partial y}{\partial x_{1q}}\\
+\frac{\partial y}{\partial x_{21}} & \frac{\partial y}{\partial x_{22}} & \cdots & \frac{\partial y}{\partial x_{2q}}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\partial y}{\partial x_{p1}} & \frac{\partial y}{\partial x_{p2}} & \cdots & \frac{\partial y}{\partial x_{pq}}
+\end{bmatrix}</script><h3 id="矩阵对标量求导"><a href="#矩阵对标量求导" class="headerlink" title="矩阵对标量求导"></a>矩阵对标量求导</h3><script type="math/tex; mode=display">
+\frac{\partial\mathbf{Y}}{\partial x}=\begin{bmatrix}\frac{\partial y_{11}}{\partial x} & \frac{\partial y_{21}}{\partial x} & \cdots & \frac{\partial y_{m1}}{\partial x}\\
+\frac{\partial y_{12}}{\partial x} & \frac{\partial y_{22}}{\partial x} & \cdots & \frac{\partial y_{m2}}{\partial x}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\partial y_{1n}}{\partial x} & \frac{\partial y_{2n}}{\partial x} & \cdots & \frac{\partial y_{mn}}{\partial x}
+\end{bmatrix}</script><h3 id="矩阵对矩阵求导"><a href="#矩阵对矩阵求导" class="headerlink" title="矩阵对矩阵求导"></a>矩阵对矩阵求导</h3><p>将矩阵视为向量组，每个向量组对向量组求导。</p>
+<h2 id="矩阵求导运算思路与运算法则"><a href="#矩阵求导运算思路与运算法则" class="headerlink" title="矩阵求导运算思路与运算法则"></a>矩阵求导运算思路与运算法则</h2><h3 id="运算思路：代表元素法"><a href="#运算思路：代表元素法" class="headerlink" title="运算思路：代表元素法"></a>运算思路：代表元素法</h3><p>因为无论是矩阵求导，还是向量求导，本质都是每个元素对元素的求导，所以在分析求导问题的时候，可以从结果矩阵中，选取第 $i$ 行 $j$ 列为代表元素，因为代表元素一定是标量的求导，这时可以用熟悉的标量求导法则来推证。</p>
+<h3 id="代表元素法证明矩阵求导的加减法则"><a href="#代表元素法证明矩阵求导的加减法则" class="headerlink" title="代表元素法证明矩阵求导的加减法则"></a>代表元素法证明矩阵求导的加减法则</h3><script type="math/tex; mode=display">
+\frac{\partial(\pmb Y+\pmb Z)}{\partial \pmb X}=
+\frac{\partial(\pmb Y)}{\partial \pmb X}
++
+\frac{\partial(\pmb Z)}{\partial \pmb X}</script><p>证明:</p>
+<p>假设</p>
+<script type="math/tex; mode=display">
+\pmb{Z}=(z_1,...,z_n)\\
+\pmb{Y}=(y_1,...,y_n)\\
+\pmb{X}=(x_1,...,x_n)</script><p>由矩阵加法得</p>
+<script type="math/tex; mode=display">
+\pmb Y+\pmb Z=(y_1+z_1,...,y_n+z_n)\\
+\frac{\partial(\pmb Y+\pmb Z)}{\partial \pmb X}=
+ \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial( y_i + z_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+ ( y_i + z_i)\in\pmb{Y}+\pmb{Z},x_j\in\pmb{X}\\
+ = 
+ \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial( y_i)}{\partial x_j}+\frac{\partial( z_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+  y_i\in\pmb{Y},z_i\in\pmb{Z},x_j\in\pmb{X}\\</script><p>因为下标 $i$ 和 下标 $j$ 是独立的，所以一定能取遍 $X,Y,Z$ 中所有的分量，故</p>
+<script type="math/tex; mode=display">
+ \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial( y_i)}{\partial x_j}+\frac{\partial( z_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]
+  =
+\left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial( y_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]+\left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial( z_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+  y_i\in\pmb{Y},z_i\in\pmb{Z},x_j\in\pmb{X}\\
+  =\frac{\partial(\pmb Y)}{\partial \pmb X}
++
+\frac{\partial(\pmb Z)}{\partial \pmb X}</script><h3 id="代表元素法证明乘法法则"><a href="#代表元素法证明乘法法则" class="headerlink" title="代表元素法证明乘法法则"></a>代表元素法证明乘法法则</h3><script type="math/tex; mode=display">
+\frac{\partial(\pmb Y\cdot\pmb Z)}{\partial \pmb X}=
+\frac{\partial(\pmb Y)}{\partial \pmb X}\pmb Z
++
+\frac{\partial(\pmb Z)}{\partial \pmb X}\pmb Y</script><p>证明：</p>
+<p>假设 $X,Y,Z$ 为n维列向量，则</p>
+<script type="math/tex; mode=display">
+\pmb Y \cdot \pmb Z=\pmb Y ^T \pmb Z=\sum_{i=1}^{n}y_iz_i\\
+
+\frac{\partial\pmb Y\cdot\pmb Z}{\partial \pmb X}=
+
+ \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(\sum_{i=1}^{n}y_iz_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+ x_j\in\pmb{X}\\</script><p>事实上由标量导数的性质和矩阵加法可得， $\sum_{i=1}^{n}y_iz_i$ 的累加符号可以提出去</p>
+<script type="math/tex; mode=display">
+\left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(\sum_{i=1}^{n}y_iz_i)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]
+
+=
+  \sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(y_kz_k)}{\partial x_j} &  \\
+   &  & 
+  \end{matrix}
+  \right]
+
+=
+  \sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(y_k)}{\partial x_j}z_k+\frac{\partial(z_k)}{\partial x_j}y_k &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+
+
+  =
+  \sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(y_k)}{\partial x_j}z_k &  \\
+   &  & 
+  \end{matrix}
+  \right]
++
+ \sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(z_k)}{\partial x_j}y_k &  \\
+   &  & 
+  \end{matrix}
+  \right]\\
+   x_j\in\pmb{X}\\</script><p>考察第一项，由矩阵加法可得：</p>
+<script type="math/tex; mode=display">
+\sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(y_k)}{\partial x_j}z_k &  \\
+   &  & 
+  \end{matrix}
+  \right] 
+
+  =
+    \left[
+ \begin{matrix}
+    &  &  \\
+    &  \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_j}z_k &  \\
+   &  & 
+  \end{matrix}
+  \right] \\
+
+   x_j\in\pmb{X}\\</script><p>方框内的是代表元素，在分母布局下，$x_j$ 的下标 $j$ 表示第 $j$ 行 , 所以该矩阵全貌是</p>
+<script type="math/tex; mode=display">
+\left[
+ \begin{matrix}
+    &  &  \\
+    &  \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_j}z_k &  \\
+   &  & 
+  \end{matrix}
+  \right]
+
+  =    
+
+  \left[
+ \begin{matrix}
+     \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_1}z_k   \\
+    \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_2}z_k  \\
+   .\\
+   .\\
+   .\\
+    \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_n}z_k 
+  \end{matrix}
+  \right] \\</script><p>由</p>
+<script type="math/tex; mode=display">
+\sum_{i=1}^n a_ib_i
+
+=
+
+[a_1,...,a_n] 
+\left[
+ \begin{matrix}
+   b_1  \\
+   .\\
+   .\\
+   .\\
+   b_n
+  \end{matrix}
+ \right]</script><p>很容易判断出</p>
+<script type="math/tex; mode=display">
+\left[
+ \begin{matrix}
+     \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_1}z_k   \\
+    \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_2}z_k  \\
+   .\\
+   .\\
+   .\\
+    \sum_{k=1}^{n}\frac{\partial(y_k)}{\partial x_n}z_k 
+  \end{matrix}
+  \right] 
+
+  =
+
+   \left[
+ \begin{matrix}
+    \frac{\partial(y_1)}{\partial x_1}&...& \frac{\partial(y_n)}{\partial x_1} \\
+   . & & .\\
+    . & & .\\
+   . & & .\\
+    \frac{\partial(y_1)}{\partial x_n}&...& \frac{\partial(y_n)}{\partial x_x}
+  \end{matrix}
+  \right]
+
+\left[
+ \begin{matrix}
+   z_1  \\
+   .\\
+   .\\
+   .\\
+   z_n
+  \end{matrix}
+ \right]
+
+ =
+
+ \frac{\partial(\pmb Y)}{\partial \pmb X}\pmb Z</script><p>同理可证，第二项：</p>
+<script type="math/tex; mode=display">
+\sum_{k=1}^{n}
+   \left[
+ \begin{matrix}
+    &  &  \\
+    & \frac{\partial(z_k)}{\partial x_j}y_k &  \\
+   &  & 
+  \end{matrix}
+  \right]=\frac{\partial(\pmb Z)}{\partial \pmb X}\pmb Y\\</script><p>此时原式得证</p>
+<script type="math/tex; mode=display">
+\frac{\partial(\pmb Y\cdot\pmb Z)}{\partial \pmb X}=
+\frac{\partial(\pmb Y)}{\partial \pmb X}\pmb Z
++
+\frac{\partial(\pmb Z)}{\partial \pmb X}\pmb Y</script><h3 id="矩阵求导运算法则"><a href="#矩阵求导运算法则" class="headerlink" title="矩阵求导运算法则"></a>矩阵求导运算法则</h3><p>其他乘法法则和链式法则也可以用类似的证明思路得到，这里略</p>
+<p><img src="/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/关于向量(矩阵" alt="image-20200310171445012">求导的理解\image-20200310171445012.png)</p>
+<p><img src="/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/关于向量(矩阵" alt="image-20200310171505597">求导的理解\image-20200310171505597.png)</p>
+</div><div class="article-tags size-small is-uppercase mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="link-muted mr-2" rel="tag" href="/tags/%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC/">矩阵求导</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/"><span class="level-item">机器学习中的“分布”</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="/img/avatar.png" alt="刘之帅"></figure><p class="title is-size-4 is-block line-height-inherit">刘之帅</p><p class="is-size-6 is-block">lzs783@qq.com</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>LiaoNing</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">2</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">5</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/LogicForeach/" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/LogicForeach/"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Web" href="https://logicforeach.net"><i class="fab fa-internet-explorer"></i></a></div></div></div><div class="card widget" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex" href="#矩阵微分"><span class="mr-2">1</span><span>矩阵微分</span></a></li><li><a class="is-flex" href="#矩阵与标量、标量与矩阵"><span class="mr-2">2</span><span>矩阵与标量、标量与矩阵</span></a><ul class="menu-list"><li><a class="is-flex" href="#标量对矩阵求导"><span class="mr-2">2.1</span><span>标量对矩阵求导</span></a></li><li><a class="is-flex" href="#矩阵对标量求导"><span class="mr-2">2.2</span><span>矩阵对标量求导</span></a></li><li><a class="is-flex" href="#矩阵对矩阵求导"><span class="mr-2">2.3</span><span>矩阵对矩阵求导</span></a></li></ul></li><li><a class="is-flex" href="#矩阵求导运算思路与运算法则"><span class="mr-2">3</span><span>矩阵求导运算思路与运算法则</span></a><ul class="menu-list"><li><a class="is-flex" href="#运算思路：代表元素法"><span class="mr-2">3.1</span><span>运算思路：代表元素法</span></a></li><li><a class="is-flex" href="#代表元素法证明矩阵求导的加减法则"><span class="mr-2">3.2</span><span>代表元素法证明矩阵求导的加减法则</span></a></li><li><a class="is-flex" href="#代表元素法证明乘法法则"><span class="mr-2">3.3</span><span>代表元素法证明乘法法则</span></a></li><li><a class="is-flex" href="#矩阵求导运算法则"><span class="mr-2">3.4</span><span>矩阵求导运算法则</span></a></li></ul></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile is-mobile" href="https://blog.csdn.net/lzs781" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">CSDN</span></span><span class="level-right"><span class="level-item tag">blog.csdn.net</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><span class="level-start"><span class="level-item">YOLO3 源码分析</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/"><span class="level-start"><span class="level-item">机器学习杂谈</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T14:03:31.957Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E5%85%B3%E4%BA%8E%E5%90%91%E9%87%8F(%E7%9F%A9%E9%98%B5)%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/">[object Object]</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/">机器学习杂谈</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T13:53:29.833Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/">机器学习中的“分布”</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/">机器学习杂谈</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-04T11:00:09.966Z">2020-04-04</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 参数学习 Keras源码分析</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-04T11:00:08.849Z">2020-04-04</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 网络结构 Keras源码分析</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-04T11:00:08.811Z">2020-04-04</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 数据处理与数据加载 Keras源码分析</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/04/"><span class="level-start"><span class="level-item">四月 2020</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Keras/"><span class="tag">Keras</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/YOLO3/"><span class="tag">YOLO3</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="tag">机器学习</span><span class="tag is-grey-lightest">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83/"><span class="tag">概率分布</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC/"><span class="tag">矩阵求导</span><span class="tag is-grey-lightest">1</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a><p class="size-small"><span>&copy; 2020 刘之帅</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>  <img src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png"><a href="http://beian.miit.gov.cn" style="color:#f72b07" target="_blank">辽ICP备17015584号</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            site: {
+                url: 'logicforeach.github.io',
+                external_link: {"enable":true,"exclude":[]}
+            },
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><script>window.addEventListener("load", function () {
+            MathJax.Hub.Config({
+                'HTML-CSS': {
+                    matchFontHeight: false
+                },
+                SVG: {
+                    matchFontHeight: false
+                },
+                CommonHTML: {
+                    matchFontHeight: false
+                },
+                tex2jax: {
+                    inlineMath: [
+                        ['$','$'],
+                        ['\\(','\\)']
+                    ]
+                }
+            });
+        });</script><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
