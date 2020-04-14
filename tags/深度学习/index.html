@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>标签: 深度学习 - LogicForeach</title><meta description="刘之帅的个人博客"><meta property="og:type" content="blog"><meta property="og:title" content="LogicForeach"><meta property="og:url" content="logicforeach.github.io"><meta property="og:site_name" content="LogicForeach"><meta property="og:description" content="刘之帅的个人博客"><meta property="og:locale" content="zh_CN"><meta property="article:author" content="刘之帅"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/LOGO.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"logicforeach.github.io"},"headline":"LogicForeach","image":["/img/og_image.png"],"author":{"@type":"Person","name":"刘之帅"},"description":"刘之帅的个人博客"}</script><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">与我相关</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="GitHub" href="https://github.com/LogicForeach"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><div class="card-content"><nav class="breadcrumb" aria-label="breadcrumbs"><ul><li><a href="/tags">标签</a></li><li class="is-active"><a href="#" aria-current="page">深度学习</a></li></ul></nav></div></div><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-14T07:44:30.084Z" title="2020-04-14T07:44:30.084Z">2020-04-14</time><span class="level-item"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></span><span class="level-item">12 分钟 读完 (大约 1753 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/">目标检测中的损失函数笔记整理(待续)</a></h1><div class="content"><h2 id="Smooth-L1-Loss"><a href="#Smooth-L1-Loss" class="headerlink" title="Smooth L1 Loss"></a>Smooth L1 Loss</h2><h3 id="函数定义与性质："><a href="#函数定义与性质：" class="headerlink" title="函数定义与性质："></a>函数定义与性质：</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><script type="math/tex; mode=display">
+<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>标签: 深度学习 - LogicForeach</title><meta description="刘之帅的个人博客"><meta property="og:type" content="blog"><meta property="og:title" content="LogicForeach"><meta property="og:url" content="logicforeach.github.io"><meta property="og:site_name" content="LogicForeach"><meta property="og:description" content="刘之帅的个人博客"><meta property="og:locale" content="zh_CN"><meta property="article:author" content="刘之帅"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/LOGO.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"logicforeach.github.io"},"headline":"LogicForeach","image":["/img/og_image.png"],"author":{"@type":"Person","name":"刘之帅"},"description":"刘之帅的个人博客"}</script><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">与我相关</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="GitHub" href="https://github.com/LogicForeach"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><div class="card-content"><nav class="breadcrumb" aria-label="breadcrumbs"><ul><li><a href="/tags">标签</a></li><li class="is-active"><a href="#" aria-current="page">深度学习</a></li></ul></nav></div></div><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-14T07:44:30.084Z" title="2020-04-14T07:44:30.084Z">2020-04-14</time><span class="level-item"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></span><span class="level-item">12 分钟 读完 (大约 1754 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/">目标检测中的损失函数笔记整理(待续)</a></h1><div class="content"><h2 id="Smooth-L1-Loss"><a href="#Smooth-L1-Loss" class="headerlink" title="Smooth L1 Loss"></a>Smooth L1 Loss</h2><h3 id="函数定义与性质："><a href="#函数定义与性质：" class="headerlink" title="函数定义与性质："></a>函数定义与性质：</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><script type="math/tex; mode=display">
 smoothL1(x) = \left\{ \begin{aligned} 0.5x^{2}    \qquad if \left| x \right| < 1\\ \left| x \right| - 0.5  \qquad otherswise,  \\ \end{aligned} \right.</script><h4 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h4><ul>
 <li>连续函数，在 x=±1 处连续</li>
 <li>偶函数，关于 x=0 对称</li>
@@ -22,84 +22,7 @@ L_{reg}(t_i,t_i^*)=smoothL1(t_i-t_i^*)
 <h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
 <li>在目标识别时，（x，y，w，h）的回归损失采用加和方式组合在一起，使得（x，y，w，h）的损失彼此独立，导致 loss 虽然看起来不错，但是（x，y，w，h）四项的回归损失有高有低，这种情况下的结果通常最终效果的评价都不是很好（最终效果的评价采用 IOU 作为标准）。</li>
 <li>目标识别时，使用 Smooth L1 Loss 的话，大边框的 loss 和小边框的 loss 并不能同等比较，相同 loss 值的情况下，大边框（100*100）的宽和高差2个像素点，肯定比小边框（10*10）的宽和高差2个像素点效果要好，但是 Smooth L1 Loss 中没有考虑边框大小这个问题，在 YOLO 中，作者使用平方根函数缓解这个问题，可这个问题依旧存在。换句话说就是  Smooth L1 Loss 不具有尺度不变形</li>
-</ul>
-<h2 id="IOU-Loss"><a href="#IOU-Loss" class="headerlink" title="IOU Loss"></a>IOU Loss</h2><h3 id="函数定义与性质"><a href="#函数定义与性质" class="headerlink" title="函数定义与性质"></a>函数定义与性质</h3><h4 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h4><script type="math/tex; mode=display">
-IOU(A,B)=\frac{A\cap B}{A\cup B}
-\\L_{reg}(PB,GT)=-ln[IOU(PB,GT)]</script><p>或</p>
-<script type="math/tex; mode=display">
-L_{reg}(PB,GT)=1-IOU(PB,GT)</script><h4 id="性质-2"><a href="#性质-2" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>非负，有下届，交并比为1，损失函数为 0</li>
-<li>使用交并比衡量预测数据与真实数据的“距离”</li>
-</ul>
-<h4 id="计算流程"><a href="#计算流程" class="headerlink" title="计算流程"></a>计算流程</h4><ul>
-<li>记 $A,B$  代表两个不同的矩形</li>
-<li>设  $A\cap B=I,A\cup B=U$ , 则 $IOU=\frac{I}{U}$</li>
-<li>因 $U=A\cup B=A+B-I$ , 所以通常使用 $IOU=\frac{I}{A+B-I}$ 计算</li>
-<li>若 $A=(A<em>{top},A</em>{bottom},A<em>{left},A</em>{right}),B=(B<em>{top},B</em>{bottom},B<em>{left},B</em>{right})$</li>
-<li>则 $I=(min{A<em>{bottom},B</em>{bottom}}-(max{A<em>{top},B</em>{top}})*(min{A<em>{right},B</em>{right}}-max{A<em>{left},B</em>{left}})$</li>
-</ul>
-<h3 id="导数的定义与性质"><a href="#导数的定义与性质" class="headerlink" title="导数的定义与性质"></a>导数的定义与性质</h3><script type="math/tex; mode=display">
-\frac{\part L}{\part A_{top}}=\frac 1 {IOU} \cdot \frac{\part IOU}{\part A_{top}}</script><h4 id="性质-3"><a href="#性质-3" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>交并比为零时不可导，即预测框与真实框不相交则不可导</li>
-<li>随交并比的变大，梯度也在减小</li>
-<li>梯度计算复杂，预测值相互影响，收敛速度慢</li>
-</ul>
-<h3 id="来源"><a href="#来源" class="headerlink" title="来源"></a>来源</h3><p>在《UnitBox: An Advanced Object Detection Network》中被提出并使用</p>
-<h3 id="优缺点分析"><a href="#优缺点分析" class="headerlink" title="优缺点分析"></a>优缺点分析</h3><h4 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h4><ul>
-<li>具有尺度不变性，因为本身就是比例，所以没有量纲，大框小框都是一视同仁</li>
-<li>IOU 强调了大小、位置、宽高之间的联系，loss 值和效果评价指标（如 mAP）关联性更强</li>
-</ul>
-<h4 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h4><ul>
-<li>当预测框和真实框没有交集的时候，IOU=0，是一个常数，没有梯度，这个在两阶段目标检测网络中问题不大，因为没有交集的预测框通常都被过滤掉了，但是对于 YOLO 这样的一阶段网络来说，这些远离真实框的预测框失去了向真实框靠近的能力，虽然最后也会被过滤掉，但是会导致更少的预测框向真实框回归，间接导致准确度下降。</li>
-<li>IOU 实际上是一个关于相交面积的函数，仅与相交面积有关，在相交面积相同的情况下，还有很多效果的不同的相交方式，这些相交方式之间无法平均。</li>
-<li>收敛速度慢</li>
-</ul>
-<h2 id="GIOU-Loss"><a href="#GIOU-Loss" class="headerlink" title="GIOU Loss"></a>GIOU Loss</h2><h3 id="函数定义与性质-1"><a href="#函数定义与性质-1" class="headerlink" title="函数定义与性质"></a>函数定义与性质</h3><script type="math/tex; mode=display">
-IOU(A,B)=\frac{A\cap B}{A\cup B}
-\\GIOU(A,B)=IOU(A,B)-\frac{C-(A\cup B)}{C}
-\\L_{reg}(PB,GT)=1-GIOU(PB,GT)</script><p>其中 $C$ 是 $A,B$ 的最小外接矩形的面积</p>
-<h4 id="计算流程-1"><a href="#计算流程-1" class="headerlink" title="计算流程"></a>计算流程</h4><ul>
-<li>记 $A,B$  代表两个不同的矩形的面积</li>
-<li>其中 $A=(A<em>{top},A</em>{bottom},A<em>{left},A</em>{right}),B=(B<em>{top},B</em>{bottom},B<em>{left},B</em>{right})$</li>
-<li>则 $I=(min{A<em>{bottom},B</em>{bottom}}-(max{A<em>{top},B</em>{top}})*(min{A<em>{right},B</em>{right}}-max{A<em>{left},B</em>{left}})$</li>
-<li>$U=A+B-I$</li>
-<li>$C=(max{A<em>{bottom},B</em>{bottom}}-(min{A<em>{top},B</em>{top}})*(max{A<em>{right},B</em>{right}}-min{A<em>{left},B</em>{left}})$</li>
-<li>$GIOU=\frac{I}{U}-\frac{C-(U)}{C}$</li>
-</ul>
-<h4 id="性质-4"><a href="#性质-4" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>具有尺度不变性</li>
-<li>-1&lt;=GIOU&lt;=1，当A=B时，GIOU=IOU=1；当A与B不相交而且离得很远时，GIOU(A,B) 趋向于-1。即当 A 和 B 不相交时，GIOU 不像 IOU 那样是一个常数。</li>
-</ul>
-<h3 id="导数性质"><a href="#导数性质" class="headerlink" title="导数性质"></a>导数性质</h3><h4 id="性质-5"><a href="#性质-5" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>不相交的矩形 A 、B 的 GIOU 仍具有梯度</li>
-</ul>
-<h3 id="来源-1"><a href="#来源-1" class="headerlink" title="来源"></a>来源</h3><p>在《Generalized Intersection over Union: A Metric and A Loss for Bounding Box Regression》中被提出</p>
-<h3 id="优缺点分析-1"><a href="#优缺点分析-1" class="headerlink" title="优缺点分析"></a>优缺点分析</h3><h4 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h4><ul>
-<li>即便不相交，也有梯度，适用于“一步走”的目标识别算法</li>
-</ul>
-<h4 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h4><ul>
-<li>当两个框为包含关系时，GIOU 等同于 IOU 对回归情况还是不能很好的评价</li>
-</ul>
-<h2 id="DIOU-Loss"><a href="#DIOU-Loss" class="headerlink" title="DIOU Loss"></a>DIOU Loss</h2><h3 id="函数定义与性质-2"><a href="#函数定义与性质-2" class="headerlink" title="函数定义与性质"></a>函数定义与性质</h3><script type="math/tex; mode=display">
-DIOU(B,B^{gt}) = IOU(B,B^{gt}) - \frac{\rho^{2}(b,b^{gt})}{c^{2}}
-\\L_{reg}(B,B^{gt})=1-DIOU(B,B^{gt})</script><p>其中 $\rho(\cdot)$ 表示欧几里得距离，$b,b^{gt}$ 分别表示矩形框 $B,B^{gt}$ 的中心点坐标，$c$ 表示 $B,B^{gt}$ 的最小外接矩形的对角线长度。</p>
-<h4 id="性质-6"><a href="#性质-6" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>具有尺度不变性</li>
-<li>-1&lt;=DIOU&lt;=1，A 和 B 完全重合时，DIOU=1；当 A 和 B 为包含关系时，A 和 B 的中心点距离越近 DIOU 越大；当 A 和 B 完全不相交时，A 和 B 中心点距离越远， DIOU 越小，最终趋近 -1</li>
-</ul>
-<h3 id="导数性质-1"><a href="#导数性质-1" class="headerlink" title="导数性质"></a>导数性质</h3><h4 id="性质-7"><a href="#性质-7" class="headerlink" title="性质"></a>性质</h4><ul>
-<li>不相交的矩形 A 、B 的 GIOU 仍具有梯度</li>
-<li>相比于 GIOU，DIOU收敛的更快</li>
-</ul>
-<h2 id="CIOU-Loss"><a href="#CIOU-Loss" class="headerlink" title="CIOU Loss"></a>CIOU Loss</h2><h3 id="函数定义与性质-3"><a href="#函数定义与性质-3" class="headerlink" title="函数定义与性质"></a>函数定义与性质</h3><script type="math/tex; mode=display">
-CIOU(B,B^{gt})=DIOU(B,B^{gt})-\alpha\upsilon
-\\L_{reg}(B,B^{gt})=1-CIOU(B,B^{gt})</script><p>其中</p>
-<script type="math/tex; mode=display">
-\alpha=\frac{\upsilon}{(1-IOU)+\upsilon}\\ 
- \upsilon = \frac{4}{\pi ^2}\left(arctan\frac{w^{gt}}{h^{gt}}-arctan\frac{w}{h} \right)^2</script><h3 id="优缺点分析-2"><a href="#优缺点分析-2" class="headerlink" title="优缺点分析"></a>优缺点分析</h3><h4 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h4><ul>
-<li>在 DIOU 基础上，考虑了长宽比的回归</li>
-</ul>
-</div></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-05T13:53:29.833Z" title="2020-04-05T13:53:29.833Z">2020-04-05</time><span class="level-item"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></span><span class="level-item">10 分钟 读完 (大约 1545 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/">机器学习中的“分布”</a></h1><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从在输入空间中的一个具体的实例上抽出一些属性，将这些属性组成一组向量，这组向量被称为特征向量。当一个特征向量输入到“学习器”中，“学习器”可以依据输入的特征向量返还一个期望的结果。用通俗的话讲，可以将“学习器”视为一个函数，建立一个输入空间到输出空间的映射，映射规则是由不断训练建立起来的。</p>
+</ul></div><a class="article-more button is-small size-small" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-05T13:53:29.833Z" title="2020-04-05T13:53:29.833Z">2020-04-05</time><span class="level-item"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></span><span class="level-item">10 分钟 读完 (大约 1545 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/">机器学习中的“分布”</a></h1><div class="content"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从在输入空间中的一个具体的实例上抽出一些属性，将这些属性组成一组向量，这组向量被称为特征向量。当一个特征向量输入到“学习器”中，“学习器”可以依据输入的特征向量返还一个期望的结果。用通俗的话讲，可以将“学习器”视为一个函数，建立一个输入空间到输出空间的映射，映射规则是由不断训练建立起来的。</p>
 <p>一个特征向量所期望的结果，被称为标签。在学习器的训练阶段，我们将特征向量与该特征向量对应的标签一同输入到学习器内，学习器根据自身输出与期望输出的“距离”进行自我优化，不断缩小输出与期望的差距。</p>
 <p>考虑到学习器的泛化问题，我们并不要求学习器的输出与期望完全一致，通常我们设立一个相对较“软”的指标。比如对于分类任务而言，我们并不要求学习器输出具体的类别，而是要求学习器输出该特征向量所描述的实例属于某个类的概率是多少；对于回归任务而言，我们期望输出值与期望值尽可能的接近而非完全相同。</p>
 <p>习惯上讲特征向量组成的空间称为“特征空间”，也叫”样本空间“，所以特征向量又称为“样本”。在西瓜书中写道：</p>
