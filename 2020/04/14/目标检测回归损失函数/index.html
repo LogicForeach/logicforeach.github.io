@@ -248,8 +248,8 @@ L_{reg}(PB,GT)=1-IOU(PB,GT)</script><h4 id="性质-2"><a href="#性质-2" class=
 <li>记 $A,B$  代表两个不同的矩形</li>
 <li>设  $A\cap B=I,A\cup B=U$ , 则 $IOU=\frac{I}{U}$</li>
 <li>因 $U=A\cup B=A+B-I$ , 所以通常使用 $IOU=\frac{I}{A+B-I}$ 计算</li>
-<li>若 $A=(A_{top},A_{bottom},A_{left},A_{right}),B=(B_{top},B_{bottom},B_{left},B_{right})$</li>
-<li>则 $I=(min{A_{bottom},B_{bottom}}-(max{A_{top},B_{top}})*(min{A_{right},B_{right}}-max{A_{left},B_{left}})$</li>
+<li>若 $A=(A<em>{top},A</em>{bottom},A<em>{left},A</em>{right}),B=(B<em>{top},B</em>{bottom},B<em>{left},B</em>{right})$</li>
+<li>则 $I=(min{A<em>{bottom},B</em>{bottom}}-(max{A<em>{top},B</em>{top}})*(min{A<em>{right},B</em>{right}}-max{A<em>{left},B</em>{left}})$</li>
 </ul>
 <h3 id="导数的定义与性质"><a href="#导数的定义与性质" class="headerlink" title="导数的定义与性质"></a>导数的定义与性质</h3><script type="math/tex; mode=display">
 \frac{\partial L}{\partial A_{top}}=\frac 1 {IOU} \cdot \frac{\partial IOU}{\partial A_{top}}</script><h4 id="性质-3"><a href="#性质-3" class="headerlink" title="性质"></a>性质</h4><ul>
@@ -273,10 +273,10 @@ IOU(A,B)=\frac{A\cap B}{A\cup B}
 \\L_{reg}(PB,GT)=1-GIOU(PB,GT)</script><p>其中 $C$ 是 $A,B$ 的最小外接矩形的面积</p>
 <h4 id="计算流程-1"><a href="#计算流程-1" class="headerlink" title="计算流程"></a>计算流程</h4><ul>
 <li>记 $A,B$  代表两个不同的矩形的面积</li>
-<li>其中 $A=(A_{top},A_{bottom},A_{left},A_{right}),B=(B_{top},B_{bottom},B_{left},B_{right})$</li>
-<li>则 $I=(min{A_{bottom},B_{bottom}}-(max{A_{top},B_{top}})*(min{A_{right},B_{right}}-max{A_{left},B_{left}})$</li>
+<li>其中 $A=(A<em>{top},A</em>{bottom},A<em>{left},A</em>{right}),B=(B<em>{top},B</em>{bottom},B<em>{left},B</em>{right})$</li>
+<li>则 $I=(min{A<em>{bottom},B</em>{bottom}}-(max{A<em>{top},B</em>{top}})*(min{A<em>{right},B</em>{right}}-max{A<em>{left},B</em>{left}})$</li>
 <li>$U=A+B-I$</li>
-<li>$C=(max{A_{bottom},B_{bottom}}-(min{A_{top},B_{top}})*(max{A_{right},B_{right}}-min{A_{left},B_{left}})$</li>
+<li>$C=(max{A<em>{bottom},B</em>{bottom}}-(min{A<em>{top},B</em>{top}})*(max{A<em>{right},B</em>{right}}-min{A<em>{left},B</em>{left}})$</li>
 <li>$GIOU=\frac{I}{U}-\frac{C-(U)}{C}$</li>
 </ul>
 <h4 id="性质-4"><a href="#性质-4" class="headerlink" title="性质"></a>性质</h4><ul>
@@ -514,46 +514,52 @@ CIOU(B,B^{gt})=DIOU(B,B^{gt})-\alpha\upsilon
 
 <script>
   if (typeof MathJax === 'undefined') {
+    // window.MathJax = {
+    //   loader: {
+    //
+    //     source: {
+    //       '[tex]/amsCd': '[tex]/amscd',
+    //       '[tex]/AMScd': '[tex]/amscd'
+    //     }
+    //   },
+    //   tex: {
+    //     inlineMath: {'[+]': [['$', '$']]},
+    //
+    //     tags: 'ams'
+    //   },
+    //   options: {
+    //     renderActions: {
+    //       findScript: [10, doc => {
+    //         document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+    //           const display = !!node.type.match(/; *mode=display/);
+    //           const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+    //           const text = document.createTextNode('');
+    //           node.parentNode.replaceChild(text, node);
+    //           math.start = {node: text, delim: '', n: 0};
+    //           math.end = {node: text, delim: '', n: 0};
+    //           doc.math.push(math);
+    //         });
+    //       }, '', false],
+    //       insertedScript: [200, () => {
+    //         document.querySelectorAll('mjx-container').forEach(node => {
+    //           let target = node.parentNode;
+    //           if (target.nodeName.toLowerCase() === 'li') {
+    //             target.parentNode.classList.add('has-jax');
+    //           }
+    //         });
+    //       }, '', false]
+    //     }
+    //   }
+    // };
     window.MathJax = {
-      loader: {
-          load: ['[tex]/mhchem'],
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-          packages: {'[+]': ['mhchem']},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
       }
     };
     (function () {
       var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@2.7.8/unpacked/MathJax.js?config=TeX-MML-AM_CHTML';
       script.defer = true;
       document.head.appendChild(script);
     })();

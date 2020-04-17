@@ -270,7 +270,7 @@ dist_{mk}(x_i,x_j)=(\sum_{u=1}^n|x_{i,u}-x_{j,x}|^p)^{\frac{1}{p}}</script><p>�
 dist(b_i,b_j)=1-IOU(b_i,b_j)</script><p><strong>K-means 算法</strong></p>
 <p>K-means 的思想是，对所划分的所有簇 $C={C_1,C_2,\dots,C_k}$ 使</p>
 <script type="math/tex; mode=display">
-E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu_i=\frac{1}{|C_i|}\sum_{x\in C_i}x$ ，即 $\mu_i$ 是 $C_i$ 的均指向量。</p>
+E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu<em>i=\frac{1}{|C_i|}\sum</em>{x\in C_i}x$ ，即 $\mu_i$ 是 $C_i$ 的均指向量。</p>
 <p>为了达到这个目的，K-means 采用贪心策略，最开始随机指定 K 个向量作为 $(\mu_1,\dots,\mu_k)$ 对于每一个 $\mu_i$ ，计算每一个向量 $x$ 与 $\mu_i$ 的距离，即 $dist(x,\mu_i)$ 将距离值最小的向量，归到 $C_i$ 然后更新  $\mu_i$ ，重复这个过程，直到 $(\mu_1,\dots,\mu_k)$ 都不再更新。</p>
 <p><img src="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/20200322031027706.png" alt></p>
 <h4 id="基础函数"><a href="#基础函数" class="headerlink" title="基础函数"></a>基础函数</h4><h5 id="YOLO-Kmeans-init"><a href="#YOLO-Kmeans-init" class="headerlink" title="YOLO_Kmeans.__init__"></a><code>YOLO_Kmeans.__init__</code></h5><p><code>YOLO_Kmeans</code> 是一个类，它的初始化函数如下：</p>
@@ -684,46 +684,52 @@ IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k �
 
 <script>
   if (typeof MathJax === 'undefined') {
+    // window.MathJax = {
+    //   loader: {
+    //
+    //     source: {
+    //       '[tex]/amsCd': '[tex]/amscd',
+    //       '[tex]/AMScd': '[tex]/amscd'
+    //     }
+    //   },
+    //   tex: {
+    //     inlineMath: {'[+]': [['$', '$']]},
+    //
+    //     tags: 'ams'
+    //   },
+    //   options: {
+    //     renderActions: {
+    //       findScript: [10, doc => {
+    //         document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+    //           const display = !!node.type.match(/; *mode=display/);
+    //           const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+    //           const text = document.createTextNode('');
+    //           node.parentNode.replaceChild(text, node);
+    //           math.start = {node: text, delim: '', n: 0};
+    //           math.end = {node: text, delim: '', n: 0};
+    //           doc.math.push(math);
+    //         });
+    //       }, '', false],
+    //       insertedScript: [200, () => {
+    //         document.querySelectorAll('mjx-container').forEach(node => {
+    //           let target = node.parentNode;
+    //           if (target.nodeName.toLowerCase() === 'li') {
+    //             target.parentNode.classList.add('has-jax');
+    //           }
+    //         });
+    //       }, '', false]
+    //     }
+    //   }
+    // };
     window.MathJax = {
-      loader: {
-          load: ['[tex]/mhchem'],
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-          packages: {'[+]': ['mhchem']},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
       }
     };
     (function () {
       var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@2.7.8/unpacked/MathJax.js?config=TeX-MML-AM_CHTML';
       script.defer = true;
       document.head.appendChild(script);
     })();
