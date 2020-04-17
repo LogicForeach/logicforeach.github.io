@@ -1,7 +1,227 @@
-<!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>YOLO3 网络结构 Keras源码分析 - LogicForeach</title><meta description="刘之帅的个人博客"><meta property="og:type" content="blog"><meta property="og:title" content="LogicForeach"><meta property="og:url" content="logicforeach.github.io"><meta property="og:site_name" content="LogicForeach"><meta property="og:description" content="刘之帅的个人博客"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2020-04-04T11:00:08.849Z"><meta property="article:modified_time" content="2020-04-14T08:20:06.763Z"><meta property="article:author" content="刘之帅"><meta property="article:tag" content="YOLO3"><meta property="article:tag" content="Keras"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/LOGO.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"},"headline":"LogicForeach","image":["/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg","/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/image-20200317183957614.png"],"datePublished":"2020-04-04T11:00:08.849Z","dateModified":"2020-04-14T08:20:06.763Z","author":{"@type":"Person","name":"刘之帅"},"description":"YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 网络结构网络结构图 图片来自：https:&#x2F;&#x2F;blog.csdn.net&#x2F;leviopku&#x2F;article&#x2F;details&#x2F;82660381 将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：  conv：卷积层 DBL： Darknetconv2d_BN_Leaky，con"}</script><link rel="canonical" href="logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">与我相关</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="GitHub" href="https://github.com/LogicForeach"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-04T11:00:08.849Z" title="2020-04-04T11:00:08.849Z">2020-04-04</time><span class="level-item"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></span><span class="level-item">28 分钟 读完 (大约 4264 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">YOLO3 网络结构 Keras源码分析</h1><div class="content"><p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3">https://github.com/qqwweee/keras-yolo3</a></p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 网络结构网络结构图 图片来自：https:&#x2F;&#x2F;blog.csdn.net&#x2F;leviopku&#x2F;article&#x2F;details&#x2F;82660381 将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：  conv：卷积层 DBL： Darknetconv2d_BN_Leaky，con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLO3 网络结构 Keras源码分析">
+<meta property="og:url" content="logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="LogicForeach">
+<meta property="og:description" content="YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 网络结构网络结构图 图片来自：https:&#x2F;&#x2F;blog.csdn.net&#x2F;leviopku&#x2F;article&#x2F;details&#x2F;82660381 将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：  conv：卷积层 DBL： Darknetconv2d_BN_Leaky，con">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg">
+<meta property="og:image" content="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/image-20200317183957614.png">
+<meta property="article:published_time" content="2020-04-04T11:00:08.849Z">
+<meta property="article:modified_time" content="2020-04-14T08:20:06.763Z">
+<meta property="article:author" content="刘之帅">
+<meta property="article:tag" content="YOLO3">
+<meta property="article:tag" content="Keras">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg">
+
+<link rel="canonical" href="logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>YOLO3 网络结构 Keras源码分析 | LogicForeach</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LogicForeach</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">刘之帅的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="刘之帅">
+      <meta itemprop="description" content="刘之帅的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LogicForeach">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          YOLO3 网络结构 Keras源码分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-04 19:00:08" itemprop="dateCreated datePublished" datetime="2020-04-04T19:00:08+08:00">2020-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-14 16:20:06" itemprop="dateModified" datetime="2020-04-14T16:20:06+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">YOLO3 源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">https://github.com/qqwweee/keras-yolo3</a></p>
 <h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><h3 id="网络结构图"><a href="#网络结构图" class="headerlink" title="网络结构图"></a>网络结构图</h3><p><img src="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg" alt="img"></p>
-<p>图片来自：<a href="https://blog.csdn.net/leviopku/article/details/82660381">https://blog.csdn.net/leviopku/article/details/82660381</a></p>
+<p>图片来自：<a href="https://blog.csdn.net/leviopku/article/details/82660381" target="_blank" rel="noopener">https://blog.csdn.net/leviopku/article/details/82660381</a></p>
 <p>将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：</p>
 <ul>
 <li>conv：卷积层</li>
@@ -24,14 +244,14 @@
 <p>从 YOLO1 其就在使用 Leaky relu 作为激活函数，Leaky relu 对比 relu 的好处就是，总是有梯度存在的，不至于让深层神经元在训练过程中因为梯度始终为 0 而出现不更新的情况。</p>
 <p><strong>如何实现 Darknetconv2d_BN_Leaky</strong></p>
 <p>在 <code>\yolo3\model.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@wraps(Conv2D)</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DarknetConv2D</span><span class="hljs-params">(*args, **kwargs)</span>:</span><br>    <span class="hljs-string">"""Wrapper to set Darknet parameters for Convolution2D."""</span><br>    darknet_conv_kwargs = &#123;<span class="hljs-string">'kernel_regularizer'</span>: l2(<span class="hljs-number">5e-4</span>)&#125; <span class="hljs-comment">#l2 是keras的l2正则化器</span><br>    darknet_conv_kwargs[<span class="hljs-string">'padding'</span>] = <span class="hljs-string">'valid'</span> <span class="hljs-keyword">if</span> kwargs.get(<span class="hljs-string">'strides'</span>)==(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">else</span> <span class="hljs-string">'same'</span><br>    darknet_conv_kwargs.update(kwargs)<br>    <span class="hljs-keyword">return</span> Conv2D(*args, **darknet_conv_kwargs)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DarknetConv2D_BN_Leaky</span><span class="hljs-params">(*args, **kwargs)</span>:</span><br>    <span class="hljs-string">"""Darknet Convolution2D followed by BatchNormalization and LeakyReLU."""</span><br>    no_bias_kwargs = &#123;<span class="hljs-string">'use_bias'</span>: <span class="hljs-literal">False</span>&#125;<br>    no_bias_kwargs.update(kwargs)<br>    <span class="hljs-keyword">return</span> compose(<br>        DarknetConv2D(*args, **no_bias_kwargs),<br>        BatchNormalization(),<br>        LeakyReLU(alpha=<span class="hljs-number">0.1</span>))<br></code></pre></td></tr></table></figure>
-<h4 id="源码分析："><a href="#源码分析：" class="headerlink" title="源码分析："></a>源码分析：</h4><h5 id="l2-5e-4"><a href="#l2-5e-4" class="headerlink" title="l2(5e-4) :"></a><code>l2(5e-4)</code> :</h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.regularizers.l2(<br>    l=<span class="hljs-number">0.01</span><br>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@wraps(Conv2D)</span><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DarknetConv2D</span><span class="hljs-params">(*args, **kwargs)</span>:</span><br>    <span class="hljs-string">"""Wrapper to set Darknet parameters for Convolution2D."""</span><br>    darknet_conv_kwargs = &#123;<span class="hljs-string">'kernel_regularizer'</span>: l2(<span class="hljs-number">5e-4</span>)&#125; <span class="hljs-comment">#l2 是keras的l2正则化器</span><br>    darknet_conv_kwargs[<span class="hljs-string">'padding'</span>] = <span class="hljs-string">'valid'</span> <span class="hljs-keyword">if</span> kwargs.get(<span class="hljs-string">'strides'</span>)==(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>) <span class="hljs-keyword">else</span> <span class="hljs-string">'same'</span><br>    darknet_conv_kwargs.update(kwargs)<br>    <span class="hljs-keyword">return</span> Conv2D(*args, **darknet_conv_kwargs)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">DarknetConv2D_BN_Leaky</span><span class="hljs-params">(*args, **kwargs)</span>:</span><br>    <span class="hljs-string">"""Darknet Convolution2D followed by BatchNormalization and LeakyReLU."""</span><br>    no_bias_kwargs = &#123;<span class="hljs-string">'use_bias'</span>: <span class="hljs-literal">False</span>&#125;<br>    no_bias_kwargs.update(kwargs)<br>    <span class="hljs-keyword">return</span> compose(<br>        DarknetConv2D(*args, **no_bias_kwargs),<br>        BatchNormalization(),<br>        LeakyReLU(alpha=<span class="hljs-number">0.1</span>))<br></code></pre></td></tr></table></figure>
+<h4 id="源码分析："><a href="#源码分析：" class="headerlink" title="源码分析："></a>源码分析：</h4><h5 id="l2-5e-4"><a href="#l2-5e-4" class="headerlink" title="l2(5e-4) :"></a><code>l2(5e-4)</code> :</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.regularizers.l2(<br>    l=<span class="hljs-number">0.01</span><br>)<br></code></pre></td></tr></table></figure>
 <p>参数:</p>
 <ul>
 <li><strong><code>l</code></strong>: 浮点型，L2 正则项前的系数</li>
 </ul>
 <p><code>l2(5e-4)</code> 表示使用 L2 正则项，系数为 <code>5e-4</code></p>
-<h5 id="Conv2D-args-darknet-conv-kwargs"><a href="#Conv2D-args-darknet-conv-kwargs" class="headerlink" title="Conv2D(*args, **darknet_conv_kwargs) :"></a><code>Conv2D(*args, **darknet_conv_kwargs)</code> :</h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.Conv2D(<br>    filters, kernel_size, strides=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), padding=<span class="hljs-string">'valid'</span>, data_format=<span class="hljs-literal">None</span>,<br>    dilation_rate=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), activation=<span class="hljs-literal">None</span>, use_bias=<span class="hljs-literal">True</span>,<br>    kernel_initializer=<span class="hljs-string">'glorot_uniform'</span>, bias_initializer=<span class="hljs-string">'zeros'</span>,<br>    kernel_regularizer=<span class="hljs-literal">None</span>, bias_regularizer=<span class="hljs-literal">None</span>, activity_regularizer=<span class="hljs-literal">None</span>,<br>    kernel_constraint=<span class="hljs-literal">None</span>, bias_constraint=<span class="hljs-literal">None</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<h5 id="Conv2D-args-darknet-conv-kwargs"><a href="#Conv2D-args-darknet-conv-kwargs" class="headerlink" title="Conv2D(*args, **darknet_conv_kwargs) :"></a><code>Conv2D(*args, **darknet_conv_kwargs)</code> :</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.Conv2D(<br>    filters, kernel_size, strides=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), padding=<span class="hljs-string">'valid'</span>, data_format=<span class="hljs-literal">None</span>,<br>    dilation_rate=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), activation=<span class="hljs-literal">None</span>, use_bias=<span class="hljs-literal">True</span>,<br>    kernel_initializer=<span class="hljs-string">'glorot_uniform'</span>, bias_initializer=<span class="hljs-string">'zeros'</span>,<br>    kernel_regularizer=<span class="hljs-literal">None</span>, bias_regularizer=<span class="hljs-literal">None</span>, activity_regularizer=<span class="hljs-literal">None</span>,<br>    kernel_constraint=<span class="hljs-literal">None</span>, bias_constraint=<span class="hljs-literal">None</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>卷积层</p>
 <p><strong>参数</strong></p>
 <ul>
@@ -53,15 +273,15 @@
 </ul>
 <p><code>Conv2D(*args, **darknet_conv_kwargs)</code> : 对 <code>args</code> 和 <code>darknet_conv_kwargs</code> 解包传参，即除了初始化器，参数都从外部传入。</p>
 <h5 id="DarknetConv2D-BN-Leaky-args-kwargs"><a href="#DarknetConv2D-BN-Leaky-args-kwargs" class="headerlink" title="DarknetConv2D_BN_Leaky(*args, **kwargs) :"></a><code>DarknetConv2D_BN_Leaky(*args, **kwargs)</code> :</h5><p>DBL 块，这个函数主要返回一个函数，该函数通过 compose 构造：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">compose(<br>        DarknetConv2D(*args, **no_bias_kwargs),<br>        BatchNormalization(),<br>        LeakyReLU(alpha=<span class="hljs-number">0.1</span>))<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">compose(<br>        DarknetConv2D(*args, **no_bias_kwargs),<br>        BatchNormalization(),<br>        LeakyReLU(alpha=<span class="hljs-number">0.1</span>))<br></code></pre></td></tr></table></figure>
 <p><code>compose</code> 是定义在 <code>\yolo3\utils.py</code> 的函数</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compose</span><span class="hljs-params">(*funcs)</span>:</span><br>    <span class="hljs-string">"""Compose arbitrarily many functions, evaluated left to right.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    Reference: https://mathieularose.com/function-composition-in-python/</span><br><span class="hljs-string">    """</span><br>    <span class="hljs-comment"># return lambda x: reduce(lambda v, f: f(v), funcs, x)</span><br>    <span class="hljs-keyword">if</span> funcs:<br>        <span class="hljs-keyword">return</span> reduce(<span class="hljs-keyword">lambda</span> f, g: <span class="hljs-keyword">lambda</span> *a, **kw: g(f(*a, **kw)), funcs)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">'Composition of empty sequence not supported.'</span>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compose</span><span class="hljs-params">(*funcs)</span>:</span><br>    <span class="hljs-string">"""Compose arbitrarily many functions, evaluated left to right.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    Reference: https://mathieularose.com/function-composition-in-python/</span><br><span class="hljs-string">    """</span><br>    <span class="hljs-comment"># return lambda x: reduce(lambda v, f: f(v), funcs, x)</span><br>    <span class="hljs-keyword">if</span> funcs:<br>        <span class="hljs-keyword">return</span> reduce(<span class="hljs-keyword">lambda</span> f, g: <span class="hljs-keyword">lambda</span> *a, **kw: g(f(*a, **kw)), funcs)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">'Composition of empty sequence not supported.'</span>)<br></code></pre></td></tr></table></figure>
 <p>其作用主要是通过<code>functools.reduce()</code> 实现可调用对象的连续调用</p>
 <p><code>DarknetConv2D_BN_Leaky(*args, **kwargs)</code> 实际上返回的是</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">LeakyReLU(alpha&#x3D;0.1))(BatchNormalization()(DarknetConv2D(*args, **no_bias_kwargs)(Inputs)))<br></code></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-constructor">LeakyReLU(<span class="hljs-params">alpha</span>=0.1)</span>)(<span class="hljs-constructor">BatchNormalization()</span>(<span class="hljs-constructor">DarknetConv2D(<span class="hljs-operator">*</span><span class="hljs-params">args</span>, <span class="hljs-operator">**</span><span class="hljs-params">no_bias_kwargs</span>)</span>(Inputs)))<br></code></pre></td></tr></table></figure>
 <p>即输入张量经过 <code>DarknetConv2D</code> 后接 <code>BatchNormalization</code> 接 <code>LeakyReLU</code> 。</p>
 <p>其中，<code>BatchNormalization</code> 和 <code>LeakyReLU</code> 分别：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.BatchNormalization(<br>    axis=<span class="hljs-number">-1</span>, momentum=<span class="hljs-number">0.99</span>, epsilon=<span class="hljs-number">0.001</span>, center=<span class="hljs-literal">True</span>, scale=<span class="hljs-literal">True</span>,<br>    beta_initializer=<span class="hljs-string">'zeros'</span>, gamma_initializer=<span class="hljs-string">'ones'</span>,<br>    moving_mean_initializer=<span class="hljs-string">'zeros'</span>, moving_variance_initializer=<span class="hljs-string">'ones'</span>,<br>    beta_regularizer=<span class="hljs-literal">None</span>, gamma_regularizer=<span class="hljs-literal">None</span>, beta_constraint=<span class="hljs-literal">None</span>,<br>    gamma_constraint=<span class="hljs-literal">None</span>, renorm=<span class="hljs-literal">False</span>, renorm_clipping=<span class="hljs-literal">None</span>, renorm_momentum=<span class="hljs-number">0.99</span>,<br>    fused=<span class="hljs-literal">None</span>, trainable=<span class="hljs-literal">True</span>, virtual_batch_size=<span class="hljs-literal">None</span>, adjustment=<span class="hljs-literal">None</span>, name=<span class="hljs-literal">None</span>,<br>    **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.BatchNormalization(<br>    axis=<span class="hljs-number">-1</span>, momentum=<span class="hljs-number">0.99</span>, epsilon=<span class="hljs-number">0.001</span>, center=<span class="hljs-literal">True</span>, scale=<span class="hljs-literal">True</span>,<br>    beta_initializer=<span class="hljs-string">'zeros'</span>, gamma_initializer=<span class="hljs-string">'ones'</span>,<br>    moving_mean_initializer=<span class="hljs-string">'zeros'</span>, moving_variance_initializer=<span class="hljs-string">'ones'</span>,<br>    beta_regularizer=<span class="hljs-literal">None</span>, gamma_regularizer=<span class="hljs-literal">None</span>, beta_constraint=<span class="hljs-literal">None</span>,<br>    gamma_constraint=<span class="hljs-literal">None</span>, renorm=<span class="hljs-literal">False</span>, renorm_clipping=<span class="hljs-literal">None</span>, renorm_momentum=<span class="hljs-number">0.99</span>,<br>    fused=<span class="hljs-literal">None</span>, trainable=<span class="hljs-literal">True</span>, virtual_batch_size=<span class="hljs-literal">None</span>, adjustment=<span class="hljs-literal">None</span>, name=<span class="hljs-literal">None</span>,<br>    **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>部分参数：</p>
 <ul>
 <li><strong><code>axis</code></strong>: 整数，应该被标准化的轴数（第几个维度） 经过卷积的数据应该是通道维度被标准化，所以在<code>data_format=&quot;channels_first&quot;</code> 的 <code>Conv2D</code> 后 , 设置 <code>axis=1</code> 。</li>
@@ -70,7 +290,7 @@
 <li><strong><code>center</code></strong>:如果为 True，把 <code>beta</code> 的偏移量加到标准化的张量上。 如果为 False， <code>beta</code> 被忽略。</li>
 <li><strong><code>scale</code></strong>: 如果为 True，乘以 <code>gamma</code>。 如果为 False，<code>gamma</code> 不使用。 当下一层为线性层（或者例如 <code>nn.relu</code>）， 这可以被禁用，因为缩放将由下一层完成。</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.LeakyReLU(<br>    alpha=<span class="hljs-number">0.3</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.LeakyReLU(<br>    alpha=<span class="hljs-number">0.3</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>该函数被解释为<code>f(x) = alpha * x for x &lt; 0</code>, <code>f(x) = x for x &gt;= 0</code>.</p>
 <h3 id="resblock-body"><a href="#resblock-body" class="headerlink" title="resblock_body"></a>resblock_body</h3><p><strong>什么是 resblock_body</strong></p>
 <p>一个 resblock_body 包含多个 res_unit，res 是  (Residual Network， ResNet ) 的缩写 , 每个 res_unit 被定义为</p>
@@ -89,10 +309,10 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 <p>其次，残差网络可以将前基层的特征隔层传递给下面的层，让一些可能被忽视的特征有了再被提取的可能。</p>
 <p><strong>怎么实现 resblock_body</strong></p>
 <p>在 <code>\yolo3\model.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">resblock_body</span><span class="hljs-params">(x, num_filters, num_blocks)</span>:</span><br>    <span class="hljs-string">'''A series of resblocks starting with a downsampling Convolution2D'''</span><br>    <span class="hljs-comment"># Darknet uses left and top padding instead of 'same' mode</span><br>    x = ZeroPadding2D(((<span class="hljs-number">1</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>)))(x)<br>    x = DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>))(x)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(num_blocks):<br>        y = compose(<br>                DarknetConv2D_BN_Leaky(num_filters//<span class="hljs-number">2</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>                DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)))(x)<br>        x = Add()([x,y])<br>    <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">resblock_body</span><span class="hljs-params">(x, num_filters, num_blocks)</span>:</span><br>    <span class="hljs-string">'''A series of resblocks starting with a downsampling Convolution2D'''</span><br>    <span class="hljs-comment"># Darknet uses left and top padding instead of 'same' mode</span><br>    x = ZeroPadding2D(((<span class="hljs-number">1</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>)))(x)<br>    x = DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>))(x)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(num_blocks):<br>        y = compose(<br>                DarknetConv2D_BN_Leaky(num_filters//<span class="hljs-number">2</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>                DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)))(x)<br>        x = Add()([x,y])<br>    <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
 <h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><h5 id="resblock-body-x-num-filters-num-blocks"><a href="#resblock-body-x-num-filters-num-blocks" class="headerlink" title="resblock_body(x, num_filters, num_blocks)"></a><code>resblock_body(x, num_filters, num_blocks)</code></h5><p><code>x</code> 是输入张量，<code>num_filters</code> 是 DBL 卷积核数目，决定了最终输出的通道数目，<code>num_blocks</code> 指 res_unit 数目。</p>
 <p>可以看到特征图经过一个 resblock_body 先要提取特征并缩小尺寸，随后开始经历 <code>num_blocks</code>  个残差单元，每个残差单元的 y 都要经过一个 1*1 卷积和 3*3 卷积</p>
-<h5 id="ZeroPadding2D-1-0-1-0-x"><a href="#ZeroPadding2D-1-0-1-0-x" class="headerlink" title="ZeroPadding2D(((1,0),(1,0)))(x)"></a><code>ZeroPadding2D(((1,0),(1,0)))(x)</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.ZeroPadding2D(<br>    padding=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), data_format=<span class="hljs-literal">None</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<h5 id="ZeroPadding2D-1-0-1-0-x"><a href="#ZeroPadding2D-1-0-1-0-x" class="headerlink" title="ZeroPadding2D(((1,0),(1,0)))(x)"></a><code>ZeroPadding2D(((1,0),(1,0)))(x)</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.ZeroPadding2D(<br>    padding=(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), data_format=<span class="hljs-literal">None</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>2D 输入的零填充层（例如图像）。</p>
 <p>该图层可以在图像张量的顶部、底部、左侧和右侧添加零表示的行和列。</p>
 <p><strong>参数</strong></p>
@@ -122,9 +342,9 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 <li>如果 <code>data_format</code> 为 <code>&quot;channels_first&quot;</code>， 输出 4D 张量，尺寸为  <code>(batch, channels, padded_rows, padded_cols)</code>。</li>
 </ul>
 <p><code>ZeroPadding2D(((1,0),(1,0)))(x)</code> 表示在 x 的上面和左边填充一列 0 </p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">x = ZeroPadding2D(((<span class="hljs-number">1</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>)))(x)<br>x = DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>))(x)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">x = ZeroPadding2D(((<span class="hljs-number">1</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">1</span>,<span class="hljs-number">0</span>)))(x)<br>x = DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>))(x)<br></code></pre></td></tr></table></figure>
 <p>上边和左边填一列零后，用 3*3 卷积核，以 2 跨步，<code>valid</code> 模式，经过卷积输出的张量尺寸为（(h-3+1)/2向下取整，(w-1+3)/2向下取整），这样也起到了池化层的作用。</p>
-<h5 id="Add-x-y"><a href="#Add-x-y" class="headerlink" title="Add()([x,y])"></a><code>Add()([x,y])</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.Add(<br>    **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<h5 id="Add-x-y"><a href="#Add-x-y" class="headerlink" title="Add()([x,y])"></a><code>Add()([x,y])</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.Add(<br>    **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>该实例没有舒适化参数，直接实例化调用就行，调用时的输入参数是一个张量列表，要求列表内的张量必须形状相同，最后结果是对应元素相加。</p>
 <p><code>Add()([x,y])</code> 是 y 是经过两个 DBL 的特征图</p>
 <h3 id="darknet-body"><a href="#darknet-body" class="headerlink" title="darknet_body"></a>darknet_body</h3><p><strong>什么是 darknet_body</strong></p>
@@ -136,7 +356,7 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 <p>使用卷积代替池化，可能是因为单纯的池化没有可学习参数，一般都是在池化前加上 1*1 卷积增加池化层的特征提取功能，Darknet-53 把 1*1 卷积与池化层合并成一个卷积了，减少了一层运算。</p>
 <p><strong>怎么实现 darknet_body</strong></p>
 <p>在 <code>\yolo3\model.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">darknet_body</span><span class="hljs-params">(x)</span>:</span><br>    <span class="hljs-string">'''Darknent body having 52 Convolution2D layers'''</span><br>    x = DarknetConv2D_BN_Leaky(<span class="hljs-number">32</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>))(x)<br>    x = resblock_body(x, <span class="hljs-number">64</span>, <span class="hljs-number">1</span>)<br>    x = resblock_body(x, <span class="hljs-number">128</span>, <span class="hljs-number">2</span>)<br>    x = resblock_body(x, <span class="hljs-number">256</span>, <span class="hljs-number">8</span>)<br>    x = resblock_body(x, <span class="hljs-number">512</span>, <span class="hljs-number">8</span>)<br>    x = resblock_body(x, <span class="hljs-number">1024</span>, <span class="hljs-number">4</span>)<br>    <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">darknet_body</span><span class="hljs-params">(x)</span>:</span><br>    <span class="hljs-string">'''Darknent body having 52 Convolution2D layers'''</span><br>    x = DarknetConv2D_BN_Leaky(<span class="hljs-number">32</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>))(x)<br>    x = resblock_body(x, <span class="hljs-number">64</span>, <span class="hljs-number">1</span>)<br>    x = resblock_body(x, <span class="hljs-number">128</span>, <span class="hljs-number">2</span>)<br>    x = resblock_body(x, <span class="hljs-number">256</span>, <span class="hljs-number">8</span>)<br>    x = resblock_body(x, <span class="hljs-number">512</span>, <span class="hljs-number">8</span>)<br>    x = resblock_body(x, <span class="hljs-number">1024</span>, <span class="hljs-number">4</span>)<br>    <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
 <p>相关层的源码上面已经解释过了，这里就照着结构图复现就完事了。</p>
 <h3 id="yolo-body"><a href="#yolo-body" class="headerlink" title="yolo_body"></a>yolo_body</h3><p><strong>什么是 yolo_body</strong></p>
 <p>yolo_body 从 yolo3 的支柱网络 Darknet-52 手里接过输出的特征图，兵分三路，最终生成了 y1，y2，y3 三个输出，三个输出深度一直，唯一不同就是尺寸，前面的 Darknet-52 是特征提取，到这就开始根据前面提取的特征进行目标识别了。</p>
@@ -145,11 +365,11 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 <p>拼接之前层的输出，是从 YOLO2 就开始有的思想，叫细粒度分类，也是为了能保留小物体的特征。</p>
 <p><strong>怎么实现 yolo_body</strong></p>
 <p>在 <code>\yolo3\model.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">make_last_layers</span><span class="hljs-params">(x, num_filters, out_filters)</span>:</span><br>    <span class="hljs-string">'''6 Conv2D_BN_Leaky layers followed by a Conv2D_linear layer'''</span><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x)<br>    y = compose(<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(out_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x)<br>    <span class="hljs-keyword">return</span> x, y<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">yolo_body</span><span class="hljs-params">(inputs, num_anchors, num_classes)</span>:</span><br>    <span class="hljs-string">"""Create YOLO_V3 model CNN body in Keras."""</span><br>    darknet = Model(inputs, darknet_body(inputs))<br>    x, y1 = make_last_layers(darknet.output, <span class="hljs-number">512</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x)<br>    x = Concatenate()([x,darknet.layers[<span class="hljs-number">152</span>].output])<br>    x, y2 = make_last_layers(x, <span class="hljs-number">256</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x)<br>    x = Concatenate()([x,darknet.layers[<span class="hljs-number">92</span>].output])<br>    x, y3 = make_last_layers(x, <span class="hljs-number">128</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    <span class="hljs-keyword">return</span> Model(inputs, [y1,y2,y3])<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">make_last_layers</span><span class="hljs-params">(x, num_filters, out_filters)</span>:</span><br>    <span class="hljs-string">'''6 Conv2D_BN_Leaky layers followed by a Conv2D_linear layer'''</span><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(num_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x)<br>    y = compose(<br>            DarknetConv2D_BN_Leaky(num_filters*<span class="hljs-number">2</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(out_filters, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x)<br>    <span class="hljs-keyword">return</span> x, y<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">yolo_body</span><span class="hljs-params">(inputs, num_anchors, num_classes)</span>:</span><br>    <span class="hljs-string">"""Create YOLO_V3 model CNN body in Keras."""</span><br>    darknet = Model(inputs, darknet_body(inputs))<br>    x, y1 = make_last_layers(darknet.output, <span class="hljs-number">512</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x)<br>    x = Concatenate()([x,darknet.layers[<span class="hljs-number">152</span>].output])<br>    x, y2 = make_last_layers(x, <span class="hljs-number">256</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    x = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x)<br>    x = Concatenate()([x,darknet.layers[<span class="hljs-number">92</span>].output])<br>    x, y3 = make_last_layers(x, <span class="hljs-number">128</span>, num_anchors*(num_classes+<span class="hljs-number">5</span>))<br><br>    <span class="hljs-keyword">return</span> Model(inputs, [y1,y2,y3])<br></code></pre></td></tr></table></figure>
 <p>这里 darknet 和 yolo3 都是用的 keras 的 Functional API 构建的网络模型，Functional API 挺简单的而且还支持多输出。</p>
 <h4 id="源码讲解"><a href="#源码讲解" class="headerlink" title="源码讲解"></a>源码讲解</h4><h5 id="make-last-layers-darknet-output-512-num-anchors-num-classes-5"><a href="#make-last-layers-darknet-output-512-num-anchors-num-classes-5" class="headerlink" title="make_last_layers(darknet.output, 512, num_anchors*(num_classes+5))"></a><code>make_last_layers(darknet.output, 512, num_anchors*(num_classes+5))</code></h5><p>这个函数先把 yolo3 的输出分成两个：y1 和不是 y1，源码结构清晰，一目了然，其中参数<code>arknet.output</code> 是提取前面已经封装成模型的 <code>darknet</code> 的输出，把前一个模型的输出作为这个模型的输入， 以前后顺序衔接两个模型。<code>512</code> 是中间 DBL 的卷积和数目，<code>num_anchors*(num_classes+5)</code> 是最终生成的特征图的深度，5 是指 4 个坐标信息 + 置信度。</p>
 <h5 id="yolo-body-inputs-num-anchors-num-classes"><a href="#yolo-body-inputs-num-anchors-num-classes" class="headerlink" title="yolo_body(inputs, num_anchors, num_classes)"></a><code>yolo_body(inputs, num_anchors, num_classes)</code></h5><p>构建 YOLO3 网络，通过 <code>UpSampling2D(2))(x)</code> 、 <code>darknet.layers[]</code>  、和 <code>Concatenate()</code> 实现特征图拼接 darknet 中间某层的输出的操作。</p>
-<h5 id="UpSampling2D-2-x"><a href="#UpSampling2D-2-x" class="headerlink" title="UpSampling2D(2))(x)"></a><code>UpSampling2D(2))(x)</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.UpSampling2D(<br>    size=(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>), data_format=<span class="hljs-literal">None</span>, interpolation=<span class="hljs-string">'nearest'</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<h5 id="UpSampling2D-2-x"><a href="#UpSampling2D-2-x" class="headerlink" title="UpSampling2D(2))(x)"></a><code>UpSampling2D(2))(x)</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.UpSampling2D(<br>    size=(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>), data_format=<span class="hljs-literal">None</span>, interpolation=<span class="hljs-string">'nearest'</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>2D 输入的上采样层。</p>
 <p>沿着数据的行和列分别重复 <code>size[0]</code> 和 <code>size[1]</code> 次。</p>
 <p><strong>参数</strong></p>
@@ -170,7 +390,7 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 </ul>
 <p>上采用就是下采样的逆操作，这里是每个元素重复4次变成一个 4*4 区域，使整个特征图尺寸扩大 4 倍（高扩 2 倍，宽扩 2 倍）</p>
 <h5 id="darknet-layers"><a href="#darknet-layers" class="headerlink" title="darknet.layers[]"></a><code>darknet.layers[]</code></h5><p><code>layers</code> 是 <code>tf.keras.Model</code> 类的属性，可以通过 <code>[]</code> 提取特定的层，也可以用<code>Model.get_layer()</code> 方法替代。</p>
-<h5 id="x-Concatenate-x-darknet-layers-152-output"><a href="#x-Concatenate-x-darknet-layers-152-output" class="headerlink" title="x = Concatenate()([x,darknet.layers[152].output])"></a><code>x = Concatenate()([x,darknet.layers[152].output])</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">tf.keras.layers.Concatenate(<br>    axis=<span class="hljs-number">-1</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
+<h5 id="x-Concatenate-x-darknet-layers-152-output"><a href="#x-Concatenate-x-darknet-layers-152-output" class="headerlink" title="x = Concatenate()([x,darknet.layers[152].output])"></a><code>x = Concatenate()([x,darknet.layers[152].output])</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">tf.keras.layers.Concatenate(<br>    axis=<span class="hljs-number">-1</span>, **kwargs<br>)<br></code></pre></td></tr></table></figure>
 <p>连接一个输入张量的列表。</p>
 <p>它接受一个张量的列表， 除了连接轴之外，其他的尺寸都必须相同， 然后返回一个由所有输入张量连接起来的输出张量。</p>
 <p><strong>参数</strong></p>
@@ -184,50 +404,261 @@ Res(\pmb Z)= \pmb Z + DBL(DBL(\pmb Z))</script><p>其中的 DBL 都是不改变�
 </ul>
 <p>注意区分于 <code>Add()</code> 一个是对应元素相加，一个把一个轴上的数据前后连接在一起。</p>
 <h2 id="Tiny-YOLO-的网络结构"><a href="#Tiny-YOLO-的网络结构" class="headerlink" title="Tiny YOLO 的网络结构"></a>Tiny YOLO 的网络结构</h2><p>通过对前面逐层代码的学习，Tiny YOLO 的结构一目了然，Tiny YOLO 缩减了 Darknet-52，并且只输出 y1 和 y2，它有更快的收敛速度，但是相对的精度没有 YOLO 高，它的源码在 <code>\yolo3\model.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tiny_yolo_body</span><span class="hljs-params">(inputs, num_anchors, num_classes)</span>:</span><br>    <span class="hljs-string">'''Create Tiny YOLO_v3 model CNN body in keras.'''</span><br>    x1 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">16</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">32</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">64</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)))(inputs)<br>    x2 = compose(<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">512</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">1024</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x1)<br>    y1 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">512</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(num_anchors*(num_classes+<span class="hljs-number">5</span>), (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x2)<br><br>    x2 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x2)<br>    y2 = compose(<br>            Concatenate(),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(num_anchors*(num_classes+<span class="hljs-number">5</span>), (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))([x2,x1])<br><br>    <span class="hljs-keyword">return</span> Model(inputs, [y1,y2])<br></code></pre></td></tr></table></figure>
-</div><div class="article-tags size-small is-uppercase mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/YOLO3/">YOLO3</a><a class="link-muted mr-2" rel="tag" href="/tags/Keras/">Keras</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">YOLO3 参数学习 Keras源码分析</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><span class="level-item">YOLO3 数据处理与数据加载 Keras源码分析</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="/img/avatar.png" alt="刘之帅"></figure><p class="title is-size-4 is-block line-height-inherit">刘之帅</p><p class="is-size-6 is-block">lzs783@qq.com</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>LiaoNing</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/LogicForeach/" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/LogicForeach/"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Web" href="https://logicforeach.net"><i class="fab fa-internet-explorer"></i></a></div></div></div><div class="card widget" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex" href="#网络结构"><span class="mr-2">1</span><span>网络结构</span></a><ul class="menu-list"><li><a class="is-flex" href="#网络结构图"><span class="mr-2">1.1</span><span>网络结构图</span></a></li><li><a class="is-flex" href="#Darknetconv2d-BN-Leaky"><span class="mr-2">1.2</span><span>Darknetconv2d_BN_Leaky</span></a><ul class="menu-list"><li><a class="is-flex" href="#DarknetConv2D-BN-Leaky-args-kwargs"><span class="mr-2">1.2.1</span><span>DarknetConv2D_BN_Leaky(*args, **kwargs) :</span></a></li></ul></li><li><a class="is-flex" href="#resblock-body"><span class="mr-2">1.3</span><span>resblock_body</span></a><ul class="menu-list"><li><a class="is-flex" href="#Add-x-y"><span class="mr-2">1.3.1</span><span>Add()([x,y])</span></a></li></ul></li><li><a class="is-flex" href="#darknet-body"><span class="mr-2">1.4</span><span>darknet_body</span></a></li><li><a class="is-flex" href="#yolo-body"><span class="mr-2">1.5</span><span>yolo_body</span></a><ul class="menu-list"><li><a class="is-flex" href="#x-Concatenate-x-darknet-layers-152-output"><span class="mr-2">1.5.1</span><span>x &amp;#x3D; Concatenate()([x,darknet.layers[152].output])</span></a></li></ul></li></ul></li><li><a class="is-flex" href="#Tiny-YOLO-的网络结构"><span class="mr-2">2</span><span>Tiny YOLO 的网络结构</span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile is-mobile" href="https://blog.csdn.net/lzs781" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">CSDN</span></span><span class="level-right"><span class="level-item tag">blog.csdn.net</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><span class="level-start"><span class="level-item">YOLO3 源码分析</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/"><span class="level-start"><span class="level-item">机器学习杂谈</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">深度学习</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-16T05:05:31.258Z">2020-04-16</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/">直观理解多维张量的reshape</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-14T07:44:30.084Z">2020-04-14</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/">目标检测中的损失函数笔记整理(待续)</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T14:03:31.957Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E5%85%B3%E4%BA%8E%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/">关于矩阵求导的理解</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/">机器学习杂谈</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T13:53:29.833Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/">机器学习中的“分布”</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-04T11:00:09.966Z">2020-04-04</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 参数学习 Keras源码分析</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/04/"><span class="level-start"><span class="level-item">四月 2020</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Keras/"><span class="tag">Keras</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/YOLO3/"><span class="tag">YOLO3</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F/"><span class="tag">多维张量</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/"><span class="tag">损失函数</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="tag">机器学习</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83/"><span class="tag">概率分布</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">深度学习</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/"><span class="tag">目标检测</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC/"><span class="tag">矩阵求导</span><span class="tag is-grey-lightest">1</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a><p class="size-small"><span>&copy; 2020 刘之帅</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>  <img src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png"><a href="http://beian.miit.gov.cn" style="color:#f72b07" target="_blank">辽ICP备17015584号</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
-            site: {
-                url: 'logicforeach.github.io',
-                external_link: {"enable":true,"exclude":[]}
-            },
-            article: {
-                highlight: {
-                    clipboard: true,
-                    fold: 'unfolded'
-                }
-            }
-        };</script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
-            if (typeof $.fn.lightGallery === 'function') {
-                $('.article').lightGallery({ selector: '.gallery-item' });
-            }
-            if (typeof $.fn.justifiedGallery === 'function') {
-                if ($('.justified-gallery > p > .gallery-item').length) {
-                    $('.justified-gallery > p > .gallery-item').unwrap();
-                }
-                $('.justified-gallery').justifiedGallery();
-            }
-        });</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" defer></script><script>window.addEventListener("load", function() {
-            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
-                renderMathInElement(element);
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tiny_yolo_body</span><span class="hljs-params">(inputs, num_anchors, num_classes)</span>:</span><br>    <span class="hljs-string">'''Create Tiny YOLO_v3 model CNN body in keras.'''</span><br>    x1 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">16</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">32</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">64</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)))(inputs)<br>    x2 = compose(<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">512</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            MaxPooling2D(pool_size=(<span class="hljs-number">2</span>,<span class="hljs-number">2</span>), strides=(<span class="hljs-number">1</span>,<span class="hljs-number">1</span>), padding=<span class="hljs-string">'same'</span>),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">1024</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x1)<br>    y1 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">512</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(num_anchors*(num_classes+<span class="hljs-number">5</span>), (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))(x2)<br><br>    x2 = compose(<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">128</span>, (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)),<br>            UpSampling2D(<span class="hljs-number">2</span>))(x2)<br>    y2 = compose(<br>            Concatenate(),<br>            DarknetConv2D_BN_Leaky(<span class="hljs-number">256</span>, (<span class="hljs-number">3</span>,<span class="hljs-number">3</span>)),<br>            DarknetConv2D(num_anchors*(num_classes+<span class="hljs-number">5</span>), (<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)))([x2,x1])<br><br>    <span class="hljs-keyword">return</span> Model(inputs, [y1,y2])<br></code></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/YOLO3/" rel="tag"># YOLO3</a>
+              <a href="/tags/Keras/" rel="tag"># Keras</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="YOLO3 数据处理与数据加载 Keras源码分析">
+      <i class="fa fa-chevron-left"></i> YOLO3 数据处理与数据加载 Keras源码分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="next" title="YOLO3 参数学习 Keras源码分析">
+      YOLO3 参数学习 Keras源码分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络结构"><span class="nav-number">1.</span> <span class="nav-text">网络结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络结构图"><span class="nav-number">1.1.</span> <span class="nav-text">网络结构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Darknetconv2d-BN-Leaky"><span class="nav-number">1.2.</span> <span class="nav-text">Darknetconv2d_BN_Leaky</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#源码分析："><span class="nav-number">1.2.1.</span> <span class="nav-text">源码分析：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#l2-5e-4"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">l2(5e-4) :</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Conv2D-args-darknet-conv-kwargs"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">Conv2D(*args, **darknet_conv_kwargs) :</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DarknetConv2D-BN-Leaky-args-kwargs"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">DarknetConv2D_BN_Leaky(*args, **kwargs) :</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#resblock-body"><span class="nav-number">1.3.</span> <span class="nav-text">resblock_body</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#源码分析"><span class="nav-number">1.3.1.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#resblock-body-x-num-filters-num-blocks"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">resblock_body(x, num_filters, num_blocks)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ZeroPadding2D-1-0-1-0-x"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">ZeroPadding2D(((1,0),(1,0)))(x)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Add-x-y"><span class="nav-number">1.3.1.3.</span> <span class="nav-text">Add()([x,y])</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#darknet-body"><span class="nav-number">1.4.</span> <span class="nav-text">darknet_body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#yolo-body"><span class="nav-number">1.5.</span> <span class="nav-text">yolo_body</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#源码讲解"><span class="nav-number">1.5.1.</span> <span class="nav-text">源码讲解</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#make-last-layers-darknet-output-512-num-anchors-num-classes-5"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">make_last_layers(darknet.output, 512, num_anchors*(num_classes+5))</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#yolo-body-inputs-num-anchors-num-classes"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">yolo_body(inputs, num_anchors, num_classes)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#UpSampling2D-2-x"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">UpSampling2D(2))(x)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#darknet-layers"><span class="nav-number">1.5.1.4.</span> <span class="nav-text">darknet.layers[]</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#x-Concatenate-x-darknet-layers-152-output"><span class="nav-number">1.5.1.5.</span> <span class="nav-text">x &#x3D; Concatenate()([x,darknet.layers[152].output])</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tiny-YOLO-的网络结构"><span class="nav-number">2.</span> <span class="nav-text">Tiny YOLO 的网络结构</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘之帅</p>
+  <div class="site-description" itemprop="description">刘之帅的个人博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘之帅</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
             });
-        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><script>window.addEventListener("load", function () {
-            MathJax.Hub.Config({
-                'HTML-CSS': {
-                    matchFontHeight: false
-                },
-                SVG: {
-                    matchFontHeight: false
-                },
-                CommonHTML: {
-                    matchFontHeight: false
-                },
-                tex2jax: {
-                    inlineMath: [
-                        ['$','$'],
-                        ['\\(','\\)']
-                    ]
-                }
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
             });
-        });</script><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
-            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
-        });</script></body></html>
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>

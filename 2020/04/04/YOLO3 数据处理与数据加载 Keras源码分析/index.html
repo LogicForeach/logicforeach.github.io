@@ -1,5 +1,224 @@
-<!doctype html>
-<html lang="zh"><head><meta charset="utf-8"><meta name="generator" content="Hexo 4.2.0"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>YOLO3 数据处理与数据加载 Keras源码分析 - LogicForeach</title><meta description="刘之帅的个人博客"><meta property="og:type" content="blog"><meta property="og:title" content="LogicForeach"><meta property="og:url" content="logicforeach.github.io"><meta property="og:site_name" content="LogicForeach"><meta property="og:description" content="刘之帅的个人博客"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2020-04-04T11:00:08.811Z"><meta property="article:modified_time" content="2020-04-14T08:20:00.789Z"><meta property="article:author" content="刘之帅"><meta property="article:tag" content="YOLO3"><meta property="article:tag" content="Keras"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/LOGO.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"},"headline":"LogicForeach","image":["/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/20200322031027706.png"],"datePublished":"2020-04-04T11:00:08.811Z","dateModified":"2020-04-14T08:20:00.789Z","author":{"@type":"Person","name":"刘之帅"},"description":"YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 前言本文从主要是从源码层面对 YOLO3 的数据处理相关内容进行分析与讲解。通常，一个功能的实现需要多个函数配合，所以我将每个功能的实现函数分为两部分，基础函数 和 实现函数 ：  基础函数：被实现函数所依赖，是实现函数的一部分 实现函数：通过调用基础函数实现功能  源码内容比较多，通过目录"}</script><link rel="canonical" href="logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><link rel="icon" href="/img/favicon.png"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">文章</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">与我相关</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="GitHub" href="https://github.com/LogicForeach"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><time class="level-item" dateTime="2020-04-04T11:00:08.811Z" title="2020-04-04T11:00:08.811Z">2020-04-04</time><span class="level-item"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></span><span class="level-item">1 小时 读完 (大约 7149 个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">YOLO3 数据处理与数据加载 Keras源码分析</h1><div class="content"><p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3">https://github.com/qqwweee/keras-yolo3</a></p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 前言本文从主要是从源码层面对 YOLO3 的数据处理相关内容进行分析与讲解。通常，一个功能的实现需要多个函数配合，所以我将每个功能的实现函数分为两部分，基础函数 和 实现函数 ：  基础函数：被实现函数所依赖，是实现函数的一部分 实现函数：通过调用基础函数实现功能  源码内容比较多，通过目录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLO3 数据处理与数据加载 Keras源码分析">
+<meta property="og:url" content="logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="LogicForeach">
+<meta property="og:description" content="YOLO3 Keras 源码：https:&#x2F;&#x2F;github.com&#x2F;qqwweee&#x2F;keras-yolo3 前言本文从主要是从源码层面对 YOLO3 的数据处理相关内容进行分析与讲解。通常，一个功能的实现需要多个函数配合，所以我将每个功能的实现函数分为两部分，基础函数 和 实现函数 ：  基础函数：被实现函数所依赖，是实现函数的一部分 实现函数：通过调用基础函数实现功能  源码内容比较多，通过目录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/20200322031027706.png">
+<meta property="article:published_time" content="2020-04-04T11:00:08.811Z">
+<meta property="article:modified_time" content="2020-04-14T08:20:00.789Z">
+<meta property="article:author" content="刘之帅">
+<meta property="article:tag" content="YOLO3">
+<meta property="article:tag" content="Keras">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/20200322031027706.png">
+
+<link rel="canonical" href="logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>YOLO3 数据处理与数据加载 Keras源码分析 | LogicForeach</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LogicForeach</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">刘之帅的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="刘之帅">
+      <meta itemprop="description" content="刘之帅的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LogicForeach">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          YOLO3 数据处理与数据加载 Keras源码分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-04 19:00:08" itemprop="dateCreated datePublished" datetime="2020-04-04T19:00:08+08:00">2020-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-14 16:20:00" itemprop="dateModified" datetime="2020-04-14T16:20:00+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">YOLO3 源码分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">https://github.com/qqwweee/keras-yolo3</a></p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文从主要是从源码层面对 YOLO3 的数据处理相关内容进行分析与讲解。通常，一个功能的实现需要多个函数配合，所以我将每个功能的实现函数分为两部分，<strong>基础函数</strong> 和 <strong>实现函数</strong> ：</p>
 <ul>
 <li>基础函数：被实现函数所依赖，是实现函数的一部分</li>
@@ -7,14 +226,14 @@
 </ul>
 <p>源码内容比较多，通过目录索引看感兴趣的地方即可。</p>
 <h2 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h2><h3 id="数据集转换"><a href="#数据集转换" class="headerlink" title="数据集转换"></a>数据集转换</h3><p>YOLO3 Keras 源码所需要的数据集应该在一个<code>.txt</code> ( 文本文件 )内，文件中的一行代表一个张图片和它的标签，其中每行的格式为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">image_file_path box1 box2 ... boxN<br></code></pre></td></tr></table></figure>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">image_file_path</span> <span class="hljs-keyword">box1 </span><span class="hljs-keyword">box2 </span>... <span class="hljs-keyword">boxN</span><br></code></pre></td></tr></table></figure>
 <p><code>box*</code> 是该图片的标签，即真实框，不同box之间用空格隔开，其中每个box的格式为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">x_min,y_min,x_max,y_max,class_id<br></code></pre></td></tr></table></figure>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey"><span class="hljs-built_in">x_min,</span>y_min,x_max,y_max,class_id<br></code></pre></td></tr></table></figure>
 <p>所以总的来说，训练用的数据集应该大体是这个样子的：</p>
 <a id="more"></a>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">path&#x2F;to&#x2F;img1.jpg 50,100,150,200,0 30,50,200,120,3<br>path&#x2F;to&#x2F;img2.jpg 120,300,250,600,2<br>...<br></code></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">path/to/img1.jpg <span class="hljs-number">50</span>,<span class="hljs-number">100</span>,<span class="hljs-number">150</span>,<span class="hljs-number">200</span>,<span class="hljs-number">0</span> <span class="hljs-number">30</span>,<span class="hljs-number">50</span>,<span class="hljs-number">200</span>,<span class="hljs-number">120</span>,<span class="hljs-number">3</span><br>path/to/img2.jpg <span class="hljs-number">120</span>,<span class="hljs-number">300</span>,<span class="hljs-number">250</span>,<span class="hljs-number">600</span>,<span class="hljs-number">2</span><br>...<br></code></pre></td></tr></table></figure>
 <p>对于 VOC 数据集，Keras 源码的作者给出了脚本 <code>voc_annotation.py</code> 可以将 VOC 数据集转化成上述格式。</p>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> xml.etree.ElementTree <span class="hljs-keyword">as</span> ET<br><span class="hljs-keyword">from</span> os <span class="hljs-keyword">import</span> getcwd<br><br>sets=[(<span class="hljs-string">'2007'</span>, <span class="hljs-string">'train'</span>), (<span class="hljs-string">'2007'</span>, <span class="hljs-string">'val'</span>), (<span class="hljs-string">'2007'</span>, <span class="hljs-string">'test'</span>)]<br><br>classes = [<span class="hljs-string">"aeroplane"</span>, <span class="hljs-string">"bicycle"</span>, <span class="hljs-string">"bird"</span>, <span class="hljs-string">"boat"</span>, <span class="hljs-string">"bottle"</span>, <span class="hljs-string">"bus"</span>, <span class="hljs-string">"car"</span>, <span class="hljs-string">"cat"</span>, <span class="hljs-string">"chair"</span>, <span class="hljs-string">"cow"</span>, <span class="hljs-string">"diningtable"</span>, <span class="hljs-string">"dog"</span>, <span class="hljs-string">"horse"</span>, <span class="hljs-string">"motorbike"</span>, <span class="hljs-string">"person"</span>, <span class="hljs-string">"pottedplant"</span>, <span class="hljs-string">"sheep"</span>, <span class="hljs-string">"sofa"</span>, <span class="hljs-string">"train"</span>, <span class="hljs-string">"tvmonitor"</span>]<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert_annotation</span><span class="hljs-params">(year, image_id, list_file)</span>:</span><br>    in_file = open(<span class="hljs-string">'VOCdevkit/VOC%s/Annotations/%s.xml'</span>%(year, image_id))<br>    tree=ET.parse(in_file)<br>    root = tree.getroot()<br><br>    <span class="hljs-keyword">for</span> obj <span class="hljs-keyword">in</span> root.iter(<span class="hljs-string">'object'</span>):<br>        difficult = obj.find(<span class="hljs-string">'difficult'</span>).text<br>        cls = obj.find(<span class="hljs-string">'name'</span>).text<br>        <span class="hljs-keyword">if</span> cls <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> classes <span class="hljs-keyword">or</span> int(difficult)==<span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">continue</span><br>        cls_id = classes.index(cls)<br>        xmlbox = obj.find(<span class="hljs-string">'bndbox'</span>)<br>        b = (int(xmlbox.find(<span class="hljs-string">'xmin'</span>).text), int(xmlbox.find(<span class="hljs-string">'ymin'</span>).text), int(xmlbox.find(<span class="hljs-string">'xmax'</span>).text), int(xmlbox.find(<span class="hljs-string">'ymax'</span>).text))<br>        list_file.write(<span class="hljs-string">" "</span> + <span class="hljs-string">","</span>.join([str(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> b]) + <span class="hljs-string">','</span> + str(cls_id))<br><br>wd = getcwd()<br><br><span class="hljs-keyword">for</span> year, image_set <span class="hljs-keyword">in</span> sets:<br>    image_ids = open(<span class="hljs-string">'VOCdevkit/VOC%s/ImageSets/Main/%s.txt'</span>%(year, image_set)).read().strip().split()<br>    list_file = open(<span class="hljs-string">'%s_%s.txt'</span>%(year, image_set), <span class="hljs-string">'w'</span>)<br>    <span class="hljs-keyword">for</span> image_id <span class="hljs-keyword">in</span> image_ids:<br>        list_file.write(<span class="hljs-string">'%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg'</span>%(wd, year, image_id))<br>        convert_annotation(year, image_id, list_file)<br>        list_file.write(<span class="hljs-string">'\n'</span>)<br>    list_file.close()<br></code></pre></td></tr></table></figure>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> xml.etree.ElementTree <span class="hljs-keyword">as</span> ET<br><span class="hljs-keyword">from</span> os <span class="hljs-keyword">import</span> getcwd<br><br>sets=[(<span class="hljs-string">'2007'</span>, <span class="hljs-string">'train'</span>), (<span class="hljs-string">'2007'</span>, <span class="hljs-string">'val'</span>), (<span class="hljs-string">'2007'</span>, <span class="hljs-string">'test'</span>)]<br><br>classes = [<span class="hljs-string">"aeroplane"</span>, <span class="hljs-string">"bicycle"</span>, <span class="hljs-string">"bird"</span>, <span class="hljs-string">"boat"</span>, <span class="hljs-string">"bottle"</span>, <span class="hljs-string">"bus"</span>, <span class="hljs-string">"car"</span>, <span class="hljs-string">"cat"</span>, <span class="hljs-string">"chair"</span>, <span class="hljs-string">"cow"</span>, <span class="hljs-string">"diningtable"</span>, <span class="hljs-string">"dog"</span>, <span class="hljs-string">"horse"</span>, <span class="hljs-string">"motorbike"</span>, <span class="hljs-string">"person"</span>, <span class="hljs-string">"pottedplant"</span>, <span class="hljs-string">"sheep"</span>, <span class="hljs-string">"sofa"</span>, <span class="hljs-string">"train"</span>, <span class="hljs-string">"tvmonitor"</span>]<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">convert_annotation</span><span class="hljs-params">(year, image_id, list_file)</span>:</span><br>    in_file = open(<span class="hljs-string">'VOCdevkit/VOC%s/Annotations/%s.xml'</span>%(year, image_id))<br>    tree=ET.parse(in_file)<br>    root = tree.getroot()<br><br>    <span class="hljs-keyword">for</span> obj <span class="hljs-keyword">in</span> root.iter(<span class="hljs-string">'object'</span>):<br>        difficult = obj.find(<span class="hljs-string">'difficult'</span>).text<br>        cls = obj.find(<span class="hljs-string">'name'</span>).text<br>        <span class="hljs-keyword">if</span> cls <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> classes <span class="hljs-keyword">or</span> int(difficult)==<span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">continue</span><br>        cls_id = classes.index(cls)<br>        xmlbox = obj.find(<span class="hljs-string">'bndbox'</span>)<br>        b = (int(xmlbox.find(<span class="hljs-string">'xmin'</span>).text), int(xmlbox.find(<span class="hljs-string">'ymin'</span>).text), int(xmlbox.find(<span class="hljs-string">'xmax'</span>).text), int(xmlbox.find(<span class="hljs-string">'ymax'</span>).text))<br>        list_file.write(<span class="hljs-string">" "</span> + <span class="hljs-string">","</span>.join([str(a) <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> b]) + <span class="hljs-string">','</span> + str(cls_id))<br><br>wd = getcwd()<br><br><span class="hljs-keyword">for</span> year, image_set <span class="hljs-keyword">in</span> sets:<br>    image_ids = open(<span class="hljs-string">'VOCdevkit/VOC%s/ImageSets/Main/%s.txt'</span>%(year, image_set)).read().strip().split()<br>    list_file = open(<span class="hljs-string">'%s_%s.txt'</span>%(year, image_set), <span class="hljs-string">'w'</span>)<br>    <span class="hljs-keyword">for</span> image_id <span class="hljs-keyword">in</span> image_ids:<br>        list_file.write(<span class="hljs-string">'%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg'</span>%(wd, year, image_id))<br>        convert_annotation(year, image_id, list_file)<br>        list_file.write(<span class="hljs-string">'\n'</span>)<br>    list_file.close()<br></code></pre></td></tr></table></figure>
 <h4 id="基础函数："><a href="#基础函数：" class="headerlink" title="基础函数："></a>基础函数：</h4><h5 id="convert-annotation-year-image-id-list-file"><a href="#convert-annotation-year-image-id-list-file" class="headerlink" title="convert_annotation(year, image_id, list_file)"></a><code>convert_annotation(year, image_id, list_file)</code></h5><p>参数：</p>
 <ul>
 <li><strong>year</strong>：整型，年代 , VOC2007 的 2007 </li>
@@ -26,10 +245,10 @@
 <li>通过 <code>year</code> 和 <code>image_id</code>找到 VOC 数据集里的 xml 文件，通过 ElementTree 找到这个 XML 里的每一个 <code>object</code> 标签，获取该标签内的 <code>xmin,ymin,xmax,ymax</code>，和列表序号<code>class_id</code> ，把它们写入到 list_file 所打开的文件对象中。</li>
 <li>总之，这个函数是在将 <code>.xml</code> 中的标注信息转化为 YOLO3 所需要标注格式，并写入文件。</li>
 </ul>
-<h4 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h4><h5 id="脚本主内容"><a href="#脚本主内容" class="headerlink" title="脚本主内容"></a>脚本主内容</h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> year, image_set <span class="hljs-keyword">in</span> sets:<br>    image_ids = open(<span class="hljs-string">'VOCdevkit/VOC%s/ImageSets/Main/%s.txt'</span>%(year, image_set)).read().strip().split()<br>    list_file = open(<span class="hljs-string">'%s_%s.txt'</span>%(year, image_set), <span class="hljs-string">'w'</span>)<br>    <span class="hljs-keyword">for</span> image_id <span class="hljs-keyword">in</span> image_ids:<br>        list_file.write(<span class="hljs-string">'%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg'</span>%(wd, year, image_id))<br>        convert_annotation(year, image_id, list_file)<br>        list_file.write(<span class="hljs-string">'\n'</span>)<br>    list_file.close()<br></code></pre></td></tr></table></figure>
+<h4 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h4><h5 id="脚本主内容"><a href="#脚本主内容" class="headerlink" title="脚本主内容"></a>脚本主内容</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> year, image_set <span class="hljs-keyword">in</span> sets:<br>    image_ids = open(<span class="hljs-string">'VOCdevkit/VOC%s/ImageSets/Main/%s.txt'</span>%(year, image_set)).read().strip().split()<br>    list_file = open(<span class="hljs-string">'%s_%s.txt'</span>%(year, image_set), <span class="hljs-string">'w'</span>)<br>    <span class="hljs-keyword">for</span> image_id <span class="hljs-keyword">in</span> image_ids:<br>        list_file.write(<span class="hljs-string">'%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg'</span>%(wd, year, image_id))<br>        convert_annotation(year, image_id, list_file)<br>        list_file.write(<span class="hljs-string">'\n'</span>)<br>    list_file.close()<br></code></pre></td></tr></table></figure>
 <p><code>year, image_set</code> 是从 <code>sets</code> 提取而来，这个 for 循环的目的是操作 <code>sets</code> 中对应的每一个文件。</p>
 <p>即打开<code>train.txt</code> 、<code>val.txt</code> 、<code>test.txt</code> ，它们里面内容长这个样：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">0<br>1<br>10<br>100<br>1000<br>....<br></code></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-number">0</span><br><span class="hljs-number">1</span><br><span class="hljs-number">10</span><br><span class="hljs-number">100</span><br><span class="hljs-number">1000</span><br>....<br></code></pre></td></tr></table></figure>
 <p>这其中每一行都是图片的序号。</p>
 <p>如打开<code>train.txt</code> ，脚本通过 <code>.read().strip().split()</code> ，把 <code>train.txt</code> 中一行一行的图片序号变成一个列表 <code>image_ids</code> ，创建一个文件对象 <code>list_file</code> 随后对列表内每一个元素进行操作：</p>
 <ul>
@@ -51,20 +270,20 @@ dist_{mk}(x_i,x_j)=(\sum_{u=1}^n|x_{i,u}-x_{j,x}|^p)^{\frac{1}{p}}</script><p>�
 dist(b_i,b_j)=1-IOU(b_i,b_j)</script><p><strong>K-means 算法</strong></p>
 <p>K-means 的思想是，对所划分的所有簇 $C={C_1,C_2,\dots,C_k}$ 使</p>
 <script type="math/tex; mode=display">
-E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu<em>i=\frac{1}{|C_i|}\sum</em>{x\in C_i}x$ ，即 $\mu_i$ 是 $C_i$ 的均指向量。</p>
+E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu_i=\frac{1}{|C_i|}\sum_{x\in C_i}x$ ，即 $\mu_i$ 是 $C_i$ 的均指向量。</p>
 <p>为了达到这个目的，K-means 采用贪心策略，最开始随机指定 K 个向量作为 $(\mu_1,\dots,\mu_k)$ 对于每一个 $\mu_i$ ，计算每一个向量 $x$ 与 $\mu_i$ 的距离，即 $dist(x,\mu_i)$ 将距离值最小的向量，归到 $C_i$ 然后更新  $\mu_i$ ，重复这个过程，直到 $(\mu_1,\dots,\mu_k)$ 都不再更新。</p>
 <p><img src="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/20200322031027706.png" alt></p>
 <h4 id="基础函数"><a href="#基础函数" class="headerlink" title="基础函数"></a>基础函数</h4><h5 id="YOLO-Kmeans-init"><a href="#YOLO-Kmeans-init" class="headerlink" title="YOLO_Kmeans.__init__"></a><code>YOLO_Kmeans.__init__</code></h5><p><code>YOLO_Kmeans</code> 是一个类，它的初始化函数如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, cluster_number, filename)</span>:</span><br>    self.cluster_number = cluster_number<br>    self.filename = filename<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, cluster_number, filename)</span>:</span><br>    self.cluster_number = cluster_number<br>    self.filename = filename<br></code></pre></td></tr></table></figure>
 <p>其作用仅是将参数保留到类内</p>
-<h5 id="YOLO-Kmeans-txt2boxes"><a href="#YOLO-Kmeans-txt2boxes" class="headerlink" title="YOLO_Kmeans.txt2boxes"></a><code>YOLO_Kmeans.txt2boxes</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">txt2boxes</span><span class="hljs-params">(self)</span>:</span><br>    f = open(self.filename, <span class="hljs-string">'r'</span>)<br>    dataSet = []<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f:<br>        infos = line.split(<span class="hljs-string">" "</span>)<br>        length = len(infos)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, length):<br>            width = int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">2</span>]) - \<br>                int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">0</span>])<br>            height = int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">3</span>]) - \<br>                int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">1</span>])<br>            dataSet.append([width, height])<br>    result = np.array(dataSet)<br>    f.close()<br>    <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-txt2boxes"><a href="#YOLO-Kmeans-txt2boxes" class="headerlink" title="YOLO_Kmeans.txt2boxes"></a><code>YOLO_Kmeans.txt2boxes</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">txt2boxes</span><span class="hljs-params">(self)</span>:</span><br>    f = open(self.filename, <span class="hljs-string">'r'</span>)<br>    dataSet = []<br>    <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f:<br>        infos = line.split(<span class="hljs-string">" "</span>)<br>        length = len(infos)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, length):<br>            width = int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">2</span>]) - \<br>                int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">0</span>])<br>            height = int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">3</span>]) - \<br>                int(infos[i].split(<span class="hljs-string">","</span>)[<span class="hljs-number">1</span>])<br>            dataSet.append([width, height])<br>    result = np.array(dataSet)<br>    f.close()<br>    <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
 <p>该方法的作用是将 YOLO 标注文件内的 box 信息转化为列表</p>
 <p>YOLO 标注文件格式如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">path&#x2F;to&#x2F;img1.jpg 50,100,150,200,0 30,50,200,120,3<br>path&#x2F;to&#x2F;img2.jpg 120,300,250,600,2<br>...<br></code></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">path/to/img1.jpg <span class="hljs-number">50</span>,<span class="hljs-number">100</span>,<span class="hljs-number">150</span>,<span class="hljs-number">200</span>,<span class="hljs-number">0</span> <span class="hljs-number">30</span>,<span class="hljs-number">50</span>,<span class="hljs-number">200</span>,<span class="hljs-number">120</span>,<span class="hljs-number">3</span><br>path/to/img2.jpg <span class="hljs-number">120</span>,<span class="hljs-number">300</span>,<span class="hljs-number">250</span>,<span class="hljs-number">600</span>,<span class="hljs-number">2</span><br>...<br></code></pre></td></tr></table></figure>
 <p><code>f</code> 是一个文件对象，文件对象可迭代，每次读取文件的一行，最外层的 for 是指对文件内的每一行操作。</p>
 <p>对文件内的每一行，以空格为分隔符，将其划分为列表 <code>infos</code> ：</p>
 <p>对 <code>infos[1]</code> 到 <code>infors[length-1]</code> 中的每一个元素 <code>infos[i]</code> 而言，每一个 <code>infos[i]</code> 代表一组 box 信息。<code>infos[i].split(&quot;,&quot;)[0]</code> 、<code>infos[i].split(&quot;,&quot;)[1]</code> 、<code>infos[i].split(&quot;,&quot;)[2]</code> 、<code>infos[i].split(&quot;,&quot;)[3]</code>   、<code>infos[i].split(&quot;,&quot;)[4]</code>分别对应 box 信息里的 <code>x_min,y_min,x_max,y_max,class_id</code> ，由这些信息就可以计算出 box 的宽和高，记为<code>[width, height]</code> ，将每组 box 的 <code>[width, height]</code> 追加到 <code>dataSet</code> 列表内，将 <code>dataSet</code>  转化为 <code>np.array</code> 并返回。</p>
-<h5 id="YOLO-Kmeans-iou"><a href="#YOLO-Kmeans-iou" class="headerlink" title="YOLO_Kmeans.iou"></a><code>YOLO_Kmeans.iou</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iou</span><span class="hljs-params">(self, boxes, clusters)</span>:</span>  <span class="hljs-comment"># 1 box -&gt; k clusters</span><br>    n = boxes.shape[<span class="hljs-number">0</span>]<br>    k = self.cluster_number<br><br>    box_area = boxes[:, <span class="hljs-number">0</span>] * boxes[:, <span class="hljs-number">1</span>]<br>    box_area = box_area.repeat(k)<br>    box_area = np.reshape(box_area, (n, k))<br><br>    cluster_area = clusters[:, <span class="hljs-number">0</span>] * clusters[:, <span class="hljs-number">1</span>]<br>    cluster_area = np.tile(cluster_area, [<span class="hljs-number">1</span>, n])<br>    cluster_area = np.reshape(cluster_area, (n, k))<br><br>    box_w_matrix = np.reshape(boxes[:, <span class="hljs-number">0</span>].repeat(k), (n, k))<br>    cluster_w_matrix = np.reshape(np.tile(clusters[:, <span class="hljs-number">0</span>], (<span class="hljs-number">1</span>, n)), (n, k))<br>    min_w_matrix = np.minimum(cluster_w_matrix, box_w_matrix)<br><br>    box_h_matrix = np.reshape(boxes[:, <span class="hljs-number">1</span>].repeat(k), (n, k))<br>    cluster_h_matrix = np.reshape(np.tile(clusters[:, <span class="hljs-number">1</span>], (<span class="hljs-number">1</span>, n)), (n, k))<br>    min_h_matrix = np.minimum(cluster_h_matrix, box_h_matrix)<br>    inter_area = np.multiply(min_w_matrix, min_h_matrix)<br><br>    result = inter_area / (box_area + cluster_area - inter_area)<br>    <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-iou"><a href="#YOLO-Kmeans-iou" class="headerlink" title="YOLO_Kmeans.iou"></a><code>YOLO_Kmeans.iou</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iou</span><span class="hljs-params">(self, boxes, clusters)</span>:</span>  <span class="hljs-comment"># 1 box -&gt; k clusters</span><br>    n = boxes.shape[<span class="hljs-number">0</span>]<br>    k = self.cluster_number<br><br>    box_area = boxes[:, <span class="hljs-number">0</span>] * boxes[:, <span class="hljs-number">1</span>]<br>    box_area = box_area.repeat(k)<br>    box_area = np.reshape(box_area, (n, k))<br><br>    cluster_area = clusters[:, <span class="hljs-number">0</span>] * clusters[:, <span class="hljs-number">1</span>]<br>    cluster_area = np.tile(cluster_area, [<span class="hljs-number">1</span>, n])<br>    cluster_area = np.reshape(cluster_area, (n, k))<br><br>    box_w_matrix = np.reshape(boxes[:, <span class="hljs-number">0</span>].repeat(k), (n, k))<br>    cluster_w_matrix = np.reshape(np.tile(clusters[:, <span class="hljs-number">0</span>], (<span class="hljs-number">1</span>, n)), (n, k))<br>    min_w_matrix = np.minimum(cluster_w_matrix, box_w_matrix)<br><br>    box_h_matrix = np.reshape(boxes[:, <span class="hljs-number">1</span>].repeat(k), (n, k))<br>    cluster_h_matrix = np.reshape(np.tile(clusters[:, <span class="hljs-number">1</span>], (<span class="hljs-number">1</span>, n)), (n, k))<br>    min_h_matrix = np.minimum(cluster_h_matrix, box_h_matrix)<br>    inter_area = np.multiply(min_w_matrix, min_h_matrix)<br><br>    result = inter_area / (box_area + cluster_area - inter_area)<br>    <span class="hljs-keyword">return</span> result<br></code></pre></td></tr></table></figure>
 <p>参数：</p>
 <ul>
 <li>boxes ： 盒子信息，结构为<code>[[w1,h1],[w2,h2]...]</code></li>
@@ -79,7 +298,7 @@ E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu<em>i=
 <li>盒子与簇在假设左上角对齐的情况下，最小的宽*最小的高就是他们相交的区域的面积，相交面积 <code>inter_area = np.multiply(min_w_matrix, min_h_matrix)</code></li>
 <li>最终返回 IOU 值 IOU = 相交面积/相并面积 = 相交面积/( 盒子面积 + 簇点面积 - 相交面积 )，最红返回的 result 的形状 <code>shape=(n,k)</code></li>
 </ul>
-<h5 id="YOLO-Kmeans-kmeans"><a href="#YOLO-Kmeans-kmeans" class="headerlink" title="YOLO_Kmeans.kmeans"></a><code>YOLO_Kmeans.kmeans</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kmeans</span><span class="hljs-params">(self, boxes, k, dist=np.median)</span>:</span><br>    box_number = boxes.shape[<span class="hljs-number">0</span>]<br>    distances = np.empty((box_number, k))<br>    last_nearest = np.zeros((box_number,))<br>    np.random.seed()<br>    clusters = boxes[np.random.choice(<br>        box_number, k, replace=<span class="hljs-literal">False</span>)]  <span class="hljs-comment"># init k clusters</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br><br>        distances = <span class="hljs-number">1</span> - self.iou(boxes, clusters)<br><br>        current_nearest = np.argmin(distances, axis=<span class="hljs-number">1</span>)<br>        <span class="hljs-keyword">if</span> (last_nearest == current_nearest).all():<br>            <span class="hljs-keyword">break</span>  <span class="hljs-comment"># clusters won't change</span><br>        <span class="hljs-keyword">for</span> cluster <span class="hljs-keyword">in</span> range(k):<br>            clusters[cluster] = dist(  <span class="hljs-comment"># update clusters</span><br>                boxes[current_nearest == cluster], axis=<span class="hljs-number">0</span>)<br><br>        last_nearest = current_nearest<br><br>    <span class="hljs-keyword">return</span> clusters<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-kmeans"><a href="#YOLO-Kmeans-kmeans" class="headerlink" title="YOLO_Kmeans.kmeans"></a><code>YOLO_Kmeans.kmeans</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">kmeans</span><span class="hljs-params">(self, boxes, k, dist=np.median)</span>:</span><br>    box_number = boxes.shape[<span class="hljs-number">0</span>]<br>    distances = np.empty((box_number, k))<br>    last_nearest = np.zeros((box_number,))<br>    np.random.seed()<br>    clusters = boxes[np.random.choice(<br>        box_number, k, replace=<span class="hljs-literal">False</span>)]  <span class="hljs-comment"># init k clusters</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br><br>        distances = <span class="hljs-number">1</span> - self.iou(boxes, clusters)<br><br>        current_nearest = np.argmin(distances, axis=<span class="hljs-number">1</span>)<br>        <span class="hljs-keyword">if</span> (last_nearest == current_nearest).all():<br>            <span class="hljs-keyword">break</span>  <span class="hljs-comment"># clusters won't change</span><br>        <span class="hljs-keyword">for</span> cluster <span class="hljs-keyword">in</span> range(k):<br>            clusters[cluster] = dist(  <span class="hljs-comment"># update clusters</span><br>                boxes[current_nearest == cluster], axis=<span class="hljs-number">0</span>)<br><br>        last_nearest = current_nearest<br><br>    <span class="hljs-keyword">return</span> clusters<br></code></pre></td></tr></table></figure>
 <p>参数 :</p>
 <ul>
 <li>boxes : 前面通过 <code>txt2boxes</code> 处理后得到的 np 数组，结构为<code>[[w1,h1],[w2,h2]...]</code></li>
@@ -113,7 +332,7 @@ E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu<em>i=
 <li><p>循环结束，将簇点列表 <code>clusters</code> 返回，在 YOLO3 中，各簇点就是预设的锚框信息。</p>
 </li>
 </ul>
-<h5 id="YOLO-Kmeans-txt2clusters"><a href="#YOLO-Kmeans-txt2clusters" class="headerlink" title="YOLO_Kmeans.txt2clusters"></a><code>YOLO_Kmeans.txt2clusters</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">txt2clusters</span><span class="hljs-params">(self)</span>:</span><br>      = self.txt2boxes()<br>    result = self.kmeans(all_boxes, k=self.cluster_number)<br>    result = result[np.lexsort(result.T[<span class="hljs-number">0</span>, <span class="hljs-literal">None</span>])]<br>    self.result2txt(result)<br>    print(<span class="hljs-string">"K anchors:\n &#123;&#125;"</span>.format(result))<br>    print(<span class="hljs-string">"Accuracy: &#123;:.2f&#125;%"</span>.format(<br>    self.avg_iou(all_boxes, result) * <span class="hljs-number">100</span>))<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-txt2clusters"><a href="#YOLO-Kmeans-txt2clusters" class="headerlink" title="YOLO_Kmeans.txt2clusters"></a><code>YOLO_Kmeans.txt2clusters</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">txt2clusters</span><span class="hljs-params">(self)</span>:</span><br>      = self.txt2boxes()<br>    result = self.kmeans(all_boxes, k=self.cluster_number)<br>    result = result[np.lexsort(result.T[<span class="hljs-number">0</span>, <span class="hljs-literal">None</span>])]<br>    self.result2txt(result)<br>    print(<span class="hljs-string">"K anchors:\n &#123;&#125;"</span>.format(result))<br>    print(<span class="hljs-string">"Accuracy: &#123;:.2f&#125;%"</span>.format(<br>    self.avg_iou(all_boxes, result) * <span class="hljs-number">100</span>))<br></code></pre></td></tr></table></figure>
 <p><code>txt2clusters</code> 是脚本的执行函数，求kmeans就是从这个函数入手，这个函数主要过程就是：</p>
 <ul>
 <li><p><code>txt2boxes</code> 将文本信息划分并提取成列表信息 <code>all_boxes</code> , <code>all_boxes</code> 内各个盒子的信息，结构为 <code>[[w1,h1],[w2,h2]...]</code></p>
@@ -131,10 +350,10 @@ E=\sum_{i=1}^k\sum_{x\in C_i}dist(x,\mu_i)</script><p>最小，其中 $\mu<em>i=
 <li><p>使用 <code>avg_iou</code> 评价聚类的结果</p>
 </li>
 </ul>
-<h5 id="YOLO-Kmeans-result2txt"><a href="#YOLO-Kmeans-result2txt" class="headerlink" title="YOLO_Kmeans.result2txt"></a><code>YOLO_Kmeans.result2txt</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">result2txt</span><span class="hljs-params">(self, data)</span>:</span><br>    f = open(<span class="hljs-string">"yolo_anchors.txt"</span>, <span class="hljs-string">'w'</span>)<br>    row = np.shape(data)[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(row):<br>        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:<br>            x_y = <span class="hljs-string">"%d,%d"</span> % (data[i][<span class="hljs-number">0</span>], data[i][<span class="hljs-number">1</span>])<br>        <span class="hljs-keyword">else</span>:<br>            x_y = <span class="hljs-string">", %d,%d"</span> % (data[i][<span class="hljs-number">0</span>], data[i][<span class="hljs-number">1</span>])<br>        f.write(x_y)<br>    f.close()<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-result2txt"><a href="#YOLO-Kmeans-result2txt" class="headerlink" title="YOLO_Kmeans.result2txt"></a><code>YOLO_Kmeans.result2txt</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">result2txt</span><span class="hljs-params">(self, data)</span>:</span><br>    f = open(<span class="hljs-string">"yolo_anchors.txt"</span>, <span class="hljs-string">'w'</span>)<br>    row = np.shape(data)[<span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(row):<br>        <span class="hljs-keyword">if</span> i == <span class="hljs-number">0</span>:<br>            x_y = <span class="hljs-string">"%d,%d"</span> % (data[i][<span class="hljs-number">0</span>], data[i][<span class="hljs-number">1</span>])<br>        <span class="hljs-keyword">else</span>:<br>            x_y = <span class="hljs-string">", %d,%d"</span> % (data[i][<span class="hljs-number">0</span>], data[i][<span class="hljs-number">1</span>])<br>        f.write(x_y)<br>    f.close()<br></code></pre></td></tr></table></figure>
 <p>将每一个簇点信息，写入 <code>yolo_anchors.txt</code> 文件，文件格式是：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><code class="hljs plain">w1,h1 w2,h2 ... wk,hk<br></code></pre></td></tr></table></figure>
-<h5 id="YOLO-Kmeans-avg-iou"><a href="#YOLO-Kmeans-avg-iou" class="headerlink" title="YOLO_Kmeans.avg_iou"></a><code>YOLO_Kmeans.avg_iou</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">avg_iou</span><span class="hljs-params">(self, boxes, clusters)</span>:</span><br>    accuracy = np.mean([np.max(self.iou(boxes, clusters), axis=<span class="hljs-number">1</span>)])<br>    <span class="hljs-keyword">return</span> accuracy<br></code></pre></td></tr></table></figure>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-function"><span class="hljs-title">w1</span></span>,h1 w2,h2 ... wk,hk<br></code></pre></td></tr></table></figure>
+<h5 id="YOLO-Kmeans-avg-iou"><a href="#YOLO-Kmeans-avg-iou" class="headerlink" title="YOLO_Kmeans.avg_iou"></a><code>YOLO_Kmeans.avg_iou</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">avg_iou</span><span class="hljs-params">(self, boxes, clusters)</span>:</span><br>    accuracy = np.mean([np.max(self.iou(boxes, clusters), axis=<span class="hljs-number">1</span>)])<br>    <span class="hljs-keyword">return</span> accuracy<br></code></pre></td></tr></table></figure>
 <p>用于评价聚类效果，这里的准确率是 n 个盒子的平均最大交并比。对于每个盒子来说，与盒子 IOU 最大的簇，一定是这个盒子所属的簇，所以 acc 可以理解为是 n 个盒子和它所属的簇的 IOU 的均值。acc 越大，说明簇分布的越好。</p>
 <p>具体算法是</p>
 <script type="math/tex; mode=display">
@@ -142,11 +361,11 @@ Accuracy=\frac{\sum_{i=1}^n IOU_{max}(Box_i)}{n}</script><p>其中，</p>
 <script type="math/tex; mode=display">
 IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k 个簇进行 IOU 运算，对于每个盒子选择 IOU 最大的值作为代表，最终求 n 个 IOU 的均值作为准确率。</p>
 <h4 id="实现函数"><a href="#实现函数" class="headerlink" title="实现函数"></a>实现函数</h4><p>在 <code>\kmeans.py</code> 文件中：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:<br>    cluster_number = <span class="hljs-number">9</span><br>    filename = <span class="hljs-string">"2007_train.txt"</span><br>    kmeans = YOLO_Kmeans(cluster_number, filename)<br>    kmeans.txt2clusters()<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:<br>    cluster_number = <span class="hljs-number">9</span><br>    filename = <span class="hljs-string">"2007_train.txt"</span><br>    kmeans = YOLO_Kmeans(cluster_number, filename)<br>    kmeans.txt2clusters()<br></code></pre></td></tr></table></figure>
 <p>整体来说，这个脚本干了两件事，一个是求符合 YOLO 要求的 Kmeans，一个是把这个结果保存成文本。</p>
 <h2 id="读入数据"><a href="#读入数据" class="headerlink" title="读入数据"></a>读入数据</h2><p>YOLO3 需要将训练数据载入后进行一些处理才能用于训练，这部分代码主要位于 <code>train.py</code> 文件。</p>
 <h4 id="基础函数-1"><a href="#基础函数-1" class="headerlink" title="基础函数"></a>基础函数</h4><h5 id="get-random-data"><a href="#get-random-data" class="headerlink" title="get_random_data"></a><code>get_random_data</code></h5><p>在<code>yolo3\utils.py</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_random_data</span><span class="hljs-params">(annotation_line, input_shape, random=True, max_boxes=<span class="hljs-number">20</span>, jitter=<span class="hljs-number">.3</span>, hue=<span class="hljs-number">.1</span>, sat=<span class="hljs-number">1.5</span>, val=<span class="hljs-number">1.5</span>, proc_img=True)</span>:</span><br>    <span class="hljs-string">'''为实现实时数据增强的随机预处理'''</span><br>    line = annotation_line.split()<br>    <span class="hljs-comment"># 打开图片</span><br>    image = Image.open(line[<span class="hljs-number">0</span>])<br>    iw, ih = image.size<br>    h, w = input_shape<br>    box = np.array([np.array(list(map(int,box.split(<span class="hljs-string">','</span>)))) <span class="hljs-keyword">for</span> box <span class="hljs-keyword">in</span> line[<span class="hljs-number">1</span>:]]) <span class="hljs-comment">#box = [[x_min,y_min,x_max,y_max,class_id],..]</span><br>    <br><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> random:<br>        <span class="hljs-comment"># 调整图像尺寸,使其与input_shape一致</span><br>        scale = min(w/iw, h/ih)<br>        nw = int(iw*scale)<br>        nh = int(ih*scale)<br>        dx = (w-nw)//<span class="hljs-number">2</span><br>        dy = (h-nh)//<span class="hljs-number">2</span><br>        image_data=<span class="hljs-number">0</span><br>        <span class="hljs-keyword">if</span> proc_img:<br>            image = image.resize((nw,nh), Image.BICUBIC)<br>            new_image = Image.new(<span class="hljs-string">'RGB'</span>, (w,h), (<span class="hljs-number">128</span>,<span class="hljs-number">128</span>,<span class="hljs-number">128</span>))<br>            new_image.paste(image, (dx, dy))<br>            image_data = np.array(new_image)/<span class="hljs-number">255.</span><br><br>        <span class="hljs-comment"># 修正 boxes</span><br>        box_data = np.zeros((max_boxes,<span class="hljs-number">5</span>))<br>        <span class="hljs-keyword">if</span> len(box)&gt;<span class="hljs-number">0</span>:<br>            np.random.shuffle(box)<br>            <span class="hljs-keyword">if</span> len(box)&gt;max_boxes: box = box[:max_boxes]<br>            box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]]*scale + dx<br>            box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]] = box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]]*scale + dy<br>            box_data[:len(box)] = box<br><br>        <span class="hljs-keyword">return</span> image_data, box_data<br><br>    <span class="hljs-comment"># 随机调整图像长宽比，长宽比改变范围由 jitter 参数控制</span><br>    new_ar = w/h * rand(<span class="hljs-number">1</span>-jitter,<span class="hljs-number">1</span>+jitter)/rand(<span class="hljs-number">1</span>-jitter,<span class="hljs-number">1</span>+jitter)<br>    <span class="hljs-comment">#随机缩放图像，缩放范围为（0.25，2）</span><br>    scale = rand(<span class="hljs-number">.25</span>, <span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">if</span> new_ar &lt; <span class="hljs-number">1</span>:<br>        nh = int(scale*h)<br>        nw = int(nh*new_ar)<br>    <span class="hljs-keyword">else</span>:<br>        nw = int(scale*w)<br>        nh = int(nw/new_ar)<br>    image = image.resize((nw,nh), Image.BICUBIC)<br><br>   <br>    <span class="hljs-comment"># 图像随机平移</span><br>    <span class="hljs-comment"># 调整图像尺寸,使其与input_shape一致，多的裁掉，少的用灰色填空</span><br>    dx = int(rand(<span class="hljs-number">0</span>, w-nw))<br>    dy = int(rand(<span class="hljs-number">0</span>, h-nh))<br>    new_image = Image.new(<span class="hljs-string">'RGB'</span>, (w,h), (<span class="hljs-number">128</span>,<span class="hljs-number">128</span>,<span class="hljs-number">128</span>))<br>    new_image.paste(image, (dx, dy))<br>    image = new_image<br><br>    <span class="hljs-comment"># 随机左右翻转，翻转概率 0.5</span><br>    flip = rand()&lt;<span class="hljs-number">.5</span><br>    <span class="hljs-keyword">if</span> flip: image = image.transpose(Image.FLIP_LEFT_RIGHT)<br><br>    <span class="hljs-comment"># 对图像的色调、饱和度、明度进行随机调整   </span><br>    hue = rand(-hue, hue)<br>    sat = rand(<span class="hljs-number">1</span>, sat) <span class="hljs-keyword">if</span> rand()&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>/rand(<span class="hljs-number">1</span>, sat) <br>    val = rand(<span class="hljs-number">1</span>, val) <span class="hljs-keyword">if</span> rand()&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>/rand(<span class="hljs-number">1</span>, val)<br>    <span class="hljs-comment"># HUE 色调; Saturation 饱和度; Value 明度</span><br>    x = rgb_to_hsv(np.array(image)/<span class="hljs-number">255.</span>)<br>    x[..., <span class="hljs-number">0</span>] += hue<br>    x[..., <span class="hljs-number">0</span>][x[..., <span class="hljs-number">0</span>]&gt;<span class="hljs-number">1</span>] -= <span class="hljs-number">1</span><br>    x[..., <span class="hljs-number">0</span>][x[..., <span class="hljs-number">0</span>]&lt;<span class="hljs-number">0</span>] += <span class="hljs-number">1</span><br>    x[..., <span class="hljs-number">1</span>] *= sat<br>    x[..., <span class="hljs-number">2</span>] *= val<br>    x[x&gt;<span class="hljs-number">1</span>] = <span class="hljs-number">1</span><br>    x[x&lt;<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    image_data = hsv_to_rgb(x) <span class="hljs-comment"># numpy array, 0 to 1</span><br><br>    <span class="hljs-comment"># 修正盒子信息</span><br>    box_data = np.zeros((max_boxes,<span class="hljs-number">5</span>))<br>    <span class="hljs-keyword">if</span> len(box)&gt;<span class="hljs-number">0</span>:<br>        np.random.shuffle(box)<br>        <span class="hljs-comment"># box 缩放与位移</span><br>        box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]]*nw/iw + dx<br>        box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]] = box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]]*nh/ih + dy<br>        <span class="hljs-comment"># box 反转</span><br>        <span class="hljs-keyword">if</span> flip: box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = w - box[:, [<span class="hljs-number">2</span>,<span class="hljs-number">0</span>]]<br>        <span class="hljs-comment"># box 截掉超出边界的</span><br>        box[:, <span class="hljs-number">0</span>:<span class="hljs-number">2</span>][box[:, <span class="hljs-number">0</span>:<span class="hljs-number">2</span>]&lt;<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>        box[:, <span class="hljs-number">2</span>][box[:, <span class="hljs-number">2</span>]&gt;w] = w<br>        box[:, <span class="hljs-number">3</span>][box[:, <span class="hljs-number">3</span>]&gt;h] = h<br>        <span class="hljs-comment"># box 丢弃过小的</span><br>        box_w = box[:, <span class="hljs-number">2</span>] - box[:, <span class="hljs-number">0</span>]<br>        box_h = box[:, <span class="hljs-number">3</span>] - box[:, <span class="hljs-number">1</span>]<br>        box = box[np.logical_and(box_w&gt;<span class="hljs-number">1</span>, box_h&gt;<span class="hljs-number">1</span>)] <span class="hljs-comment"># discard invalid box</span><br>        <span class="hljs-keyword">if</span> len(box)&gt;max_boxes: box = box[:max_boxes]<br>        box_data[:len(box)] = box<br><br>    <span class="hljs-keyword">return</span> image_data, box_data<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_random_data</span><span class="hljs-params">(annotation_line, input_shape, random=True, max_boxes=<span class="hljs-number">20</span>, jitter=<span class="hljs-number">.3</span>, hue=<span class="hljs-number">.1</span>, sat=<span class="hljs-number">1.5</span>, val=<span class="hljs-number">1.5</span>, proc_img=True)</span>:</span><br>    <span class="hljs-string">'''为实现实时数据增强的随机预处理'''</span><br>    line = annotation_line.split()<br>    <span class="hljs-comment"># 打开图片</span><br>    image = Image.open(line[<span class="hljs-number">0</span>])<br>    iw, ih = image.size<br>    h, w = input_shape<br>    box = np.array([np.array(list(map(int,box.split(<span class="hljs-string">','</span>)))) <span class="hljs-keyword">for</span> box <span class="hljs-keyword">in</span> line[<span class="hljs-number">1</span>:]]) <span class="hljs-comment">#box = [[x_min,y_min,x_max,y_max,class_id],..]</span><br>    <br><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> random:<br>        <span class="hljs-comment"># 调整图像尺寸,使其与input_shape一致</span><br>        scale = min(w/iw, h/ih)<br>        nw = int(iw*scale)<br>        nh = int(ih*scale)<br>        dx = (w-nw)//<span class="hljs-number">2</span><br>        dy = (h-nh)//<span class="hljs-number">2</span><br>        image_data=<span class="hljs-number">0</span><br>        <span class="hljs-keyword">if</span> proc_img:<br>            image = image.resize((nw,nh), Image.BICUBIC)<br>            new_image = Image.new(<span class="hljs-string">'RGB'</span>, (w,h), (<span class="hljs-number">128</span>,<span class="hljs-number">128</span>,<span class="hljs-number">128</span>))<br>            new_image.paste(image, (dx, dy))<br>            image_data = np.array(new_image)/<span class="hljs-number">255.</span><br><br>        <span class="hljs-comment"># 修正 boxes</span><br>        box_data = np.zeros((max_boxes,<span class="hljs-number">5</span>))<br>        <span class="hljs-keyword">if</span> len(box)&gt;<span class="hljs-number">0</span>:<br>            np.random.shuffle(box)<br>            <span class="hljs-keyword">if</span> len(box)&gt;max_boxes: box = box[:max_boxes]<br>            box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]]*scale + dx<br>            box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]] = box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]]*scale + dy<br>            box_data[:len(box)] = box<br><br>        <span class="hljs-keyword">return</span> image_data, box_data<br><br>    <span class="hljs-comment"># 随机调整图像长宽比，长宽比改变范围由 jitter 参数控制</span><br>    new_ar = w/h * rand(<span class="hljs-number">1</span>-jitter,<span class="hljs-number">1</span>+jitter)/rand(<span class="hljs-number">1</span>-jitter,<span class="hljs-number">1</span>+jitter)<br>    <span class="hljs-comment">#随机缩放图像，缩放范围为（0.25，2）</span><br>    scale = rand(<span class="hljs-number">.25</span>, <span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">if</span> new_ar &lt; <span class="hljs-number">1</span>:<br>        nh = int(scale*h)<br>        nw = int(nh*new_ar)<br>    <span class="hljs-keyword">else</span>:<br>        nw = int(scale*w)<br>        nh = int(nw/new_ar)<br>    image = image.resize((nw,nh), Image.BICUBIC)<br><br>   <br>    <span class="hljs-comment"># 图像随机平移</span><br>    <span class="hljs-comment"># 调整图像尺寸,使其与input_shape一致，多的裁掉，少的用灰色填空</span><br>    dx = int(rand(<span class="hljs-number">0</span>, w-nw))<br>    dy = int(rand(<span class="hljs-number">0</span>, h-nh))<br>    new_image = Image.new(<span class="hljs-string">'RGB'</span>, (w,h), (<span class="hljs-number">128</span>,<span class="hljs-number">128</span>,<span class="hljs-number">128</span>))<br>    new_image.paste(image, (dx, dy))<br>    image = new_image<br><br>    <span class="hljs-comment"># 随机左右翻转，翻转概率 0.5</span><br>    flip = rand()&lt;<span class="hljs-number">.5</span><br>    <span class="hljs-keyword">if</span> flip: image = image.transpose(Image.FLIP_LEFT_RIGHT)<br><br>    <span class="hljs-comment"># 对图像的色调、饱和度、明度进行随机调整   </span><br>    hue = rand(-hue, hue)<br>    sat = rand(<span class="hljs-number">1</span>, sat) <span class="hljs-keyword">if</span> rand()&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>/rand(<span class="hljs-number">1</span>, sat) <br>    val = rand(<span class="hljs-number">1</span>, val) <span class="hljs-keyword">if</span> rand()&lt;<span class="hljs-number">.5</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>/rand(<span class="hljs-number">1</span>, val)<br>    <span class="hljs-comment"># HUE 色调; Saturation 饱和度; Value 明度</span><br>    x = rgb_to_hsv(np.array(image)/<span class="hljs-number">255.</span>)<br>    x[..., <span class="hljs-number">0</span>] += hue<br>    x[..., <span class="hljs-number">0</span>][x[..., <span class="hljs-number">0</span>]&gt;<span class="hljs-number">1</span>] -= <span class="hljs-number">1</span><br>    x[..., <span class="hljs-number">0</span>][x[..., <span class="hljs-number">0</span>]&lt;<span class="hljs-number">0</span>] += <span class="hljs-number">1</span><br>    x[..., <span class="hljs-number">1</span>] *= sat<br>    x[..., <span class="hljs-number">2</span>] *= val<br>    x[x&gt;<span class="hljs-number">1</span>] = <span class="hljs-number">1</span><br>    x[x&lt;<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    image_data = hsv_to_rgb(x) <span class="hljs-comment"># numpy array, 0 to 1</span><br><br>    <span class="hljs-comment"># 修正盒子信息</span><br>    box_data = np.zeros((max_boxes,<span class="hljs-number">5</span>))<br>    <span class="hljs-keyword">if</span> len(box)&gt;<span class="hljs-number">0</span>:<br>        np.random.shuffle(box)<br>        <span class="hljs-comment"># box 缩放与位移</span><br>        box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]]*nw/iw + dx<br>        box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]] = box[:, [<span class="hljs-number">1</span>,<span class="hljs-number">3</span>]]*nh/ih + dy<br>        <span class="hljs-comment"># box 反转</span><br>        <span class="hljs-keyword">if</span> flip: box[:, [<span class="hljs-number">0</span>,<span class="hljs-number">2</span>]] = w - box[:, [<span class="hljs-number">2</span>,<span class="hljs-number">0</span>]]<br>        <span class="hljs-comment"># box 截掉超出边界的</span><br>        box[:, <span class="hljs-number">0</span>:<span class="hljs-number">2</span>][box[:, <span class="hljs-number">0</span>:<span class="hljs-number">2</span>]&lt;<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>        box[:, <span class="hljs-number">2</span>][box[:, <span class="hljs-number">2</span>]&gt;w] = w<br>        box[:, <span class="hljs-number">3</span>][box[:, <span class="hljs-number">3</span>]&gt;h] = h<br>        <span class="hljs-comment"># box 丢弃过小的</span><br>        box_w = box[:, <span class="hljs-number">2</span>] - box[:, <span class="hljs-number">0</span>]<br>        box_h = box[:, <span class="hljs-number">3</span>] - box[:, <span class="hljs-number">1</span>]<br>        box = box[np.logical_and(box_w&gt;<span class="hljs-number">1</span>, box_h&gt;<span class="hljs-number">1</span>)] <span class="hljs-comment"># discard invalid box</span><br>        <span class="hljs-keyword">if</span> len(box)&gt;max_boxes: box = box[:max_boxes]<br>        box_data[:len(box)] = box<br><br>    <span class="hljs-keyword">return</span> image_data, box_data<br></code></pre></td></tr></table></figure>
 <p><code>get_random_data</code> 函数用于从 YOLO3 的标注文件生成训练所需的图像信息，同时还提供了对图像的随机数据增强。具体实现看注释吧。</p>
 <p>参数：</p>
 <ul>
@@ -167,7 +386,7 @@ IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k �
 <li><code>box_data</code> 二维数组，结构类似 <code>[[x_min,y_min,x_max,y_max,class_id],..]</code>，它的形状为 <code>shape=(max_boxes,5)</code>，5 是指相对于输入尺寸的绝对坐标 <code>x_min, y_min, x_max, y_max,</code> 和类别号  <code>class_id</code></li>
 </ul>
 <h5 id="preprocess-true-boxes"><a href="#preprocess-true-boxes" class="headerlink" title="preprocess_true_boxes"></a><code>preprocess_true_boxes</code></h5><p>在<code>yolo3\model.py</code></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">preprocess_true_boxes</span><span class="hljs-params">(true_boxes, input_shape, anchors, num_classes)</span>:</span><br>    <span class="hljs-keyword">assert</span> (true_boxes[..., <span class="hljs-number">4</span>]&lt;num_classes).all(), <span class="hljs-string">'class id must be less than num_classes'</span><br>    num_layers = len(anchors)//<span class="hljs-number">3</span> <span class="hljs-comment"># default setting</span><br>    anchor_mask = [[<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>], [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>], [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]] <span class="hljs-keyword">if</span> num_layers==<span class="hljs-number">3</span> <span class="hljs-keyword">else</span> [[<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>], [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]]<br><br>    true_boxes = np.array(true_boxes, dtype=<span class="hljs-string">'float32'</span>)<br>    input_shape = np.array(input_shape, dtype=<span class="hljs-string">'int32'</span>)<br>    boxes_xy = (true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>] + true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>]) // <span class="hljs-number">2</span><br>    boxes_wh = true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>] - true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>]<br>    true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>] = boxes_xy/input_shape[::<span class="hljs-number">-1</span>]<br>    true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>] = boxes_wh/input_shape[::<span class="hljs-number">-1</span>]<br><br>    m = true_boxes.shape[<span class="hljs-number">0</span>]<br>    grid_shapes = [input_shape//&#123;<span class="hljs-number">0</span>:<span class="hljs-number">32</span>, <span class="hljs-number">1</span>:<span class="hljs-number">16</span>, <span class="hljs-number">2</span>:<span class="hljs-number">8</span>&#125;[l] <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers)]<br>    y_true = [np.zeros((m,grid_shapes[l][<span class="hljs-number">0</span>],grid_shapes[l][<span class="hljs-number">1</span>],len(anchor_mask[l]),<span class="hljs-number">5</span>+num_classes),<br>        dtype=<span class="hljs-string">'float32'</span>) <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers)]<br><br>    <span class="hljs-comment"># Expand dim to apply broadcasting.</span><br>    anchors = np.expand_dims(anchors, <span class="hljs-number">0</span>)<br>    anchor_maxes = anchors / <span class="hljs-number">2.</span><br>    anchor_mins = -anchor_maxes<br>    valid_mask = boxes_wh[..., <span class="hljs-number">0</span>]&gt;<span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> range(m):<br>        <span class="hljs-comment"># Discard zero rows.</span><br>        wh = boxes_wh[b, valid_mask[b]]<br>        <span class="hljs-keyword">if</span> len(wh)==<span class="hljs-number">0</span>: <span class="hljs-keyword">continue</span><br>        <span class="hljs-comment"># Expand dim to apply broadcasting.</span><br>        wh = np.expand_dims(wh, <span class="hljs-number">-2</span>)<br>        box_maxes = wh / <span class="hljs-number">2.</span><br>        box_mins = -box_maxes<br><br>        intersect_mins = np.maximum(box_mins, anchor_mins)<br>        intersect_maxes = np.minimum(box_maxes, anchor_maxes)<br>        intersect_wh = np.maximum(intersect_maxes - intersect_mins, <span class="hljs-number">0.</span>)<br>        intersect_area = intersect_wh[..., <span class="hljs-number">0</span>] * intersect_wh[..., <span class="hljs-number">1</span>]<br>        box_area = wh[..., <span class="hljs-number">0</span>] * wh[..., <span class="hljs-number">1</span>]<br>        anchor_area = anchors[..., <span class="hljs-number">0</span>] * anchors[..., <span class="hljs-number">1</span>]<br>        iou = intersect_area / (box_area + anchor_area - intersect_area)<br><br>        <span class="hljs-comment"># Find best anchor for each true box</span><br>        best_anchor = np.argmax(iou, axis=<span class="hljs-number">-1</span>)<br><br>        <span class="hljs-keyword">for</span> t, n <span class="hljs-keyword">in</span> enumerate(best_anchor):<br>            <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers):<br>                <span class="hljs-keyword">if</span> n <span class="hljs-keyword">in</span> anchor_mask[l]:<br>                    i = np.floor(true_boxes[b,t,<span class="hljs-number">0</span>]*grid_shapes[l][<span class="hljs-number">1</span>]).astype(<span class="hljs-string">'int32'</span>)<br>                    j = np.floor(true_boxes[b,t,<span class="hljs-number">1</span>]*grid_shapes[l][<span class="hljs-number">0</span>]).astype(<span class="hljs-string">'int32'</span>)<br>                    k = anchor_mask[l].index(n)<br>                    c = true_boxes[b,t, <span class="hljs-number">4</span>].astype(<span class="hljs-string">'int32'</span>)<br>                    y_true[l][b, j, i, k, <span class="hljs-number">0</span>:<span class="hljs-number">4</span>] = true_boxes[b,t, <span class="hljs-number">0</span>:<span class="hljs-number">4</span>]<br>                    y_true[l][b, j, i, k, <span class="hljs-number">4</span>] = <span class="hljs-number">1</span><br>                    y_true[l][b, j, i, k, <span class="hljs-number">5</span>+c] = <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">return</span> y_true<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">preprocess_true_boxes</span><span class="hljs-params">(true_boxes, input_shape, anchors, num_classes)</span>:</span><br>    <span class="hljs-keyword">assert</span> (true_boxes[..., <span class="hljs-number">4</span>]&lt;num_classes).all(), <span class="hljs-string">'class id must be less than num_classes'</span><br>    num_layers = len(anchors)//<span class="hljs-number">3</span> <span class="hljs-comment"># default setting</span><br>    anchor_mask = [[<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>], [<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>], [<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]] <span class="hljs-keyword">if</span> num_layers==<span class="hljs-number">3</span> <span class="hljs-keyword">else</span> [[<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>], [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]]<br><br>    true_boxes = np.array(true_boxes, dtype=<span class="hljs-string">'float32'</span>)<br>    input_shape = np.array(input_shape, dtype=<span class="hljs-string">'int32'</span>)<br>    boxes_xy = (true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>] + true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>]) // <span class="hljs-number">2</span><br>    boxes_wh = true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>] - true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>]<br>    true_boxes[..., <span class="hljs-number">0</span>:<span class="hljs-number">2</span>] = boxes_xy/input_shape[::<span class="hljs-number">-1</span>]<br>    true_boxes[..., <span class="hljs-number">2</span>:<span class="hljs-number">4</span>] = boxes_wh/input_shape[::<span class="hljs-number">-1</span>]<br><br>    m = true_boxes.shape[<span class="hljs-number">0</span>]<br>    grid_shapes = [input_shape//&#123;<span class="hljs-number">0</span>:<span class="hljs-number">32</span>, <span class="hljs-number">1</span>:<span class="hljs-number">16</span>, <span class="hljs-number">2</span>:<span class="hljs-number">8</span>&#125;[l] <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers)]<br>    y_true = [np.zeros((m,grid_shapes[l][<span class="hljs-number">0</span>],grid_shapes[l][<span class="hljs-number">1</span>],len(anchor_mask[l]),<span class="hljs-number">5</span>+num_classes),<br>        dtype=<span class="hljs-string">'float32'</span>) <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers)]<br><br>    <span class="hljs-comment"># Expand dim to apply broadcasting.</span><br>    anchors = np.expand_dims(anchors, <span class="hljs-number">0</span>)<br>    anchor_maxes = anchors / <span class="hljs-number">2.</span><br>    anchor_mins = -anchor_maxes<br>    valid_mask = boxes_wh[..., <span class="hljs-number">0</span>]&gt;<span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> range(m):<br>        <span class="hljs-comment"># Discard zero rows.</span><br>        wh = boxes_wh[b, valid_mask[b]]<br>        <span class="hljs-keyword">if</span> len(wh)==<span class="hljs-number">0</span>: <span class="hljs-keyword">continue</span><br>        <span class="hljs-comment"># Expand dim to apply broadcasting.</span><br>        wh = np.expand_dims(wh, <span class="hljs-number">-2</span>)<br>        box_maxes = wh / <span class="hljs-number">2.</span><br>        box_mins = -box_maxes<br><br>        intersect_mins = np.maximum(box_mins, anchor_mins)<br>        intersect_maxes = np.minimum(box_maxes, anchor_maxes)<br>        intersect_wh = np.maximum(intersect_maxes - intersect_mins, <span class="hljs-number">0.</span>)<br>        intersect_area = intersect_wh[..., <span class="hljs-number">0</span>] * intersect_wh[..., <span class="hljs-number">1</span>]<br>        box_area = wh[..., <span class="hljs-number">0</span>] * wh[..., <span class="hljs-number">1</span>]<br>        anchor_area = anchors[..., <span class="hljs-number">0</span>] * anchors[..., <span class="hljs-number">1</span>]<br>        iou = intersect_area / (box_area + anchor_area - intersect_area)<br><br>        <span class="hljs-comment"># Find best anchor for each true box</span><br>        best_anchor = np.argmax(iou, axis=<span class="hljs-number">-1</span>)<br><br>        <span class="hljs-keyword">for</span> t, n <span class="hljs-keyword">in</span> enumerate(best_anchor):<br>            <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> range(num_layers):<br>                <span class="hljs-keyword">if</span> n <span class="hljs-keyword">in</span> anchor_mask[l]:<br>                    i = np.floor(true_boxes[b,t,<span class="hljs-number">0</span>]*grid_shapes[l][<span class="hljs-number">1</span>]).astype(<span class="hljs-string">'int32'</span>)<br>                    j = np.floor(true_boxes[b,t,<span class="hljs-number">1</span>]*grid_shapes[l][<span class="hljs-number">0</span>]).astype(<span class="hljs-string">'int32'</span>)<br>                    k = anchor_mask[l].index(n)<br>                    c = true_boxes[b,t, <span class="hljs-number">4</span>].astype(<span class="hljs-string">'int32'</span>)<br>                    y_true[l][b, j, i, k, <span class="hljs-number">0</span>:<span class="hljs-number">4</span>] = true_boxes[b,t, <span class="hljs-number">0</span>:<span class="hljs-number">4</span>]<br>                    y_true[l][b, j, i, k, <span class="hljs-number">4</span>] = <span class="hljs-number">1</span><br>                    y_true[l][b, j, i, k, <span class="hljs-number">5</span>+c] = <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">return</span> y_true<br></code></pre></td></tr></table></figure>
 <p>该函数用于将真实盒子信息转化成训练所需要的格式。</p>
 <p>参数：</p>
 <ul>
@@ -230,7 +449,7 @@ IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k �
 </li>
 </ul>
 <h4 id="实现函数-1"><a href="#实现函数-1" class="headerlink" title="实现函数"></a>实现函数</h4><p>训练数据是由 <code>data_generator_wrapper</code> 生成：</p>
-<h5 id="data-generator-wrapper"><a href="#data-generator-wrapper" class="headerlink" title="data_generator_wrapper"></a><code>data_generator_wrapper</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python">data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, num_classes):<br>    n = len(annotation_lines)<br>    <span class="hljs-keyword">if</span> n==<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> batch_size&lt;=<span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">return</span> data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes)<br></code></pre></td></tr></table></figure>
+<h5 id="data-generator-wrapper"><a href="#data-generator-wrapper" class="headerlink" title="data_generator_wrapper"></a><code>data_generator_wrapper</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">data_generator_wrapper(annotation_lines, batch_size, input_shape, anchors, num_classes):<br>    n = len(annotation_lines)<br>    <span class="hljs-keyword">if</span> n==<span class="hljs-number">0</span> <span class="hljs-keyword">or</span> batch_size&lt;=<span class="hljs-number">0</span>: <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span><br>    <span class="hljs-keyword">return</span> data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes)<br></code></pre></td></tr></table></figure>
 <p>参数：</p>
 <ul>
 <li><strong>annotation_lines</strong>：yolo3 标注文件的行数，也就是总训练样本数</li>
@@ -240,7 +459,7 @@ IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k �
 <li><strong>num_classes</strong> ：类别数目，由 <code>len(get_classes(classes_path))</code> 得到</li>
 </ul>
 <p><code>data_generator_wrapper</code> 只是对参数进行简单的检验，最终数据由 <code>data_generator</code> 生成</p>
-<h5 id="data-generator"><a href="#data-generator" class="headerlink" title="data_generator"></a><code>data_generator</code></h5><figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">data_generator</span><span class="hljs-params">(annotation_lines, batch_size, input_shape, anchors, num_classes)</span>:</span><br>    <span class="hljs-string">'''data generator for fit_generator'''</span><br>    n = len(annotation_lines)<br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        image_data = []<br>        box_data = []<br>        <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> range(batch_size):<br>            <span class="hljs-keyword">if</span> i==<span class="hljs-number">0</span>:<br>                np.random.shuffle(annotation_lines)<br>            image, box = get_random_data(annotation_lines[i], input_shape, random=<span class="hljs-literal">True</span>)<br>            image_data.append(image)<br>            box_data.append(box)<br>            i = (i+<span class="hljs-number">1</span>) % n<br>        image_data = np.array(image_data)<br>        box_data = np.array(box_data)<br>        y_true = preprocess_true_boxes(box_data, input_shape, anchors, num_classes)<br>        <span class="hljs-keyword">yield</span> [image_data, *y_true], np.zeros(batch_size)<br></code></pre></td></tr></table></figure>
+<h5 id="data-generator"><a href="#data-generator" class="headerlink" title="data_generator"></a><code>data_generator</code></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">data_generator</span><span class="hljs-params">(annotation_lines, batch_size, input_shape, anchors, num_classes)</span>:</span><br>    <span class="hljs-string">'''data generator for fit_generator'''</span><br>    n = len(annotation_lines)<br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        image_data = []<br>        box_data = []<br>        <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> range(batch_size):<br>            <span class="hljs-keyword">if</span> i==<span class="hljs-number">0</span>:<br>                np.random.shuffle(annotation_lines)<br>            image, box = get_random_data(annotation_lines[i], input_shape, random=<span class="hljs-literal">True</span>)<br>            image_data.append(image)<br>            box_data.append(box)<br>            i = (i+<span class="hljs-number">1</span>) % n<br>        image_data = np.array(image_data)<br>        box_data = np.array(box_data)<br>        y_true = preprocess_true_boxes(box_data, input_shape, anchors, num_classes)<br>        <span class="hljs-keyword">yield</span> [image_data, *y_true], np.zeros(batch_size)<br></code></pre></td></tr></table></figure>
 <p><code>data_generator</code> 是一个生成器，所以用 <code>yield</code> 替代 <code>return</code> ，这生成器直接作用于 <code>model.fit_generator</code> ，所以生成器生成的数据，就是每一<code>epoch</code> 训练的数据。</p>
 <p>生成器的参数和 <code>data_generator_wrapper</code> 参数一致。</p>
 <p><code>model.fit_generator</code> 要求 <code>data_generator</code>  返回一个下面任意一个元组：</p>
@@ -264,49 +483,260 @@ IOU_{max}(Box_i)=\max_{i}\{ IOU(Box_i,C_j) \}</script><p>即 n 个盒子和 k �
 <li>通过 <code>preprocess_true_boxes(box_data, input_shape, anchors, num_classes)</code> 由盒子信息获取 loss 函数所需的目标信息 <code>y_true</code></li>
 <li>返回 <code>[image_data, *y_true], np.zeros(batch_size)</code></li>
 </ul>
-</div><div class="article-tags size-small is-uppercase mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/YOLO3/">YOLO3</a><a class="link-muted mr-2" rel="tag" href="/tags/Keras/">Keras</a></div><!--!--></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">YOLO3 网络结构 Keras源码分析</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2020/04/04/YOLO3%20%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%8E%E6%80%A7%E8%83%BD%E8%AF%84%E4%BB%B7%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><span class="level-item">YOLO3 目标检测与性能评价 Keras源码分析</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="" src="/img/avatar.png" alt="刘之帅"></figure><p class="title is-size-4 is-block line-height-inherit">刘之帅</p><p class="is-size-6 is-block">lzs783@qq.com</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>LiaoNing</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/LogicForeach/" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/LogicForeach/"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Web" href="https://logicforeach.net"><i class="fab fa-internet-explorer"></i></a></div></div></div><div class="card widget" id="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex" href="#前言"><span class="mr-2">1</span><span>前言</span></a></li><li><a class="is-flex" href="#数据处理"><span class="mr-2">2</span><span>数据处理</span></a><ul class="menu-list"><li><a class="is-flex" href="#数据集转换"><span class="mr-2">2.1</span><span>数据集转换</span></a></li><li><a class="is-flex" href="#源码分析"><span class="mr-2">2.2</span><span>源码分析</span></a><ul class="menu-list"><li><a class="is-flex" href="#convert-annotation-year-image-id-list-file"><span class="mr-2">2.2.1</span><span>convert_annotation(year, image_id, list_file)</span></a></li><li><a class="is-flex" href="#脚本主内容"><span class="mr-2">2.2.2</span><span>脚本主内容</span></a></li></ul></li><li><a class="is-flex" href="#使用-K-means-生成锚框"><span class="mr-2">2.3</span><span>使用 K-means 生成锚框</span></a><ul class="menu-list"><li><a class="is-flex" href="#理论基础"><span class="mr-2">2.3.1</span><span>理论基础</span></a></li><li><a class="is-flex" href="#YOLO-Kmeans-avg-iou"><span class="mr-2">2.3.2</span><span>YOLO_Kmeans.avg_iou</span></a></li><li><a class="is-flex" href="#实现函数"><span class="mr-2">2.3.3</span><span>实现函数</span></a></li></ul></li></ul></li><li><a class="is-flex" href="#读入数据"><span class="mr-2">3</span><span>读入数据</span></a><ul class="menu-list"><ul class="menu-list"><li><a class="is-flex" href="#preprocess-true-boxes"><span class="mr-2">3.1.1</span><span>preprocess_true_boxes</span></a></li><li><a class="is-flex" href="#data-generator"><span class="mr-2">3.1.2</span><span>data_generator</span></a></li></ul></ul></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile is-mobile" href="https://blog.csdn.net/lzs781" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">CSDN</span></span><span class="level-right"><span class="level-item tag">blog.csdn.net</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"><span class="level-start"><span class="level-item">YOLO3 源码分析</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/"><span class="level-start"><span class="level-item">机器学习杂谈</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile is-marginless" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"><span class="level-start"><span class="level-item">深度学习</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-16T05:05:31.258Z">2020-04-16</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/">直观理解多维张量的reshape</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-14T07:44:30.084Z">2020-04-14</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/">目标检测中的损失函数笔记整理(待续)</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T14:03:31.957Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E5%85%B3%E4%BA%8E%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/">关于矩阵求导的理解</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%9D%82%E8%B0%88/">机器学习杂谈</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-05T13:53:29.833Z">2020-04-05</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/05/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83/">机器学习中的“分布”</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></p></div></article><article class="media"><div class="media-content size-small"><p><time dateTime="2020-04-04T11:00:09.966Z">2020-04-04</time></p><p class="title is-6"><a class="link-muted" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 参数学习 Keras源码分析</a></p><p class="is-uppercase"><a class="link-muted" href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">YOLO3 源码分析</a></p></div></article></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile is-marginless" href="/archives/2020/04/"><span class="level-start"><span class="level-item">四月 2020</span></span><span class="level-end"><span class="level-item tag">8</span></span></a></li></ul></div></div></div><div class="card widget"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Keras/"><span class="tag">Keras</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/YOLO3/"><span class="tag">YOLO3</span><span class="tag is-grey-lightest">4</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F/"><span class="tag">多维张量</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/"><span class="tag">损失函数</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="tag">机器学习</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83/"><span class="tag">概率分布</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"><span class="tag">深度学习</span><span class="tag is-grey-lightest">3</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/"><span class="tag">目标检测</span><span class="tag is-grey-lightest">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC/"><span class="tag">矩阵求导</span><span class="tag is-grey-lightest">1</span></a></div></div></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/LOGO.jpg" alt="LogicForeach" height="28"></a><p class="size-small"><span>&copy; 2020 刘之帅</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a>  <img src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png"><a href="http://beian.miit.gov.cn" style="color:#f72b07" target="_blank">辽ICP备17015584号</a></p></div><div class="level-end"></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
-            site: {
-                url: 'logicforeach.github.io',
-                external_link: {"enable":true,"exclude":[]}
-            },
-            article: {
-                highlight: {
-                    clipboard: true,
-                    fold: 'unfolded'
-                }
-            }
-        };</script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
-            if (typeof $.fn.lightGallery === 'function') {
-                $('.article').lightGallery({ selector: '.gallery-item' });
-            }
-            if (typeof $.fn.justifiedGallery === 'function') {
-                if ($('.justified-gallery > p > .gallery-item').length) {
-                    $('.justified-gallery > p > .gallery-item').unwrap();
-                }
-                $('.justified-gallery').justifiedGallery();
-            }
-        });</script><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" defer></script><script>window.addEventListener("load", function() {
-            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
-                renderMathInElement(element);
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/YOLO3/" rel="tag"># YOLO3</a>
+              <a href="/tags/Keras/" rel="tag"># Keras</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/04/YOLO3%20%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%8E%E6%80%A7%E8%83%BD%E8%AF%84%E4%BB%B7%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="YOLO3 目标检测与性能评价 Keras源码分析">
+      <i class="fa fa-chevron-left"></i> YOLO3 目标检测与性能评价 Keras源码分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="next" title="YOLO3 网络结构 Keras源码分析">
+      YOLO3 网络结构 Keras源码分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据处理"><span class="nav-number">2.</span> <span class="nav-text">数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据集转换"><span class="nav-number">2.1.</span> <span class="nav-text">数据集转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码分析"><span class="nav-number">2.2.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基础函数："><span class="nav-number">2.2.1.</span> <span class="nav-text">基础函数：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#convert-annotation-year-image-id-list-file"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">convert_annotation(year, image_id, list_file)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现过程"><span class="nav-number">2.2.2.</span> <span class="nav-text">实现过程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#脚本主内容"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">脚本主内容</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-K-means-生成锚框"><span class="nav-number">2.3.</span> <span class="nav-text">使用 K-means 生成锚框</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#理论基础"><span class="nav-number">2.3.1.</span> <span class="nav-text">理论基础</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基础函数"><span class="nav-number">2.3.2.</span> <span class="nav-text">基础函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-init"><span class="nav-number">2.3.2.1.</span> <span class="nav-text">YOLO_Kmeans.__init__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-txt2boxes"><span class="nav-number">2.3.2.2.</span> <span class="nav-text">YOLO_Kmeans.txt2boxes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-iou"><span class="nav-number">2.3.2.3.</span> <span class="nav-text">YOLO_Kmeans.iou</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-kmeans"><span class="nav-number">2.3.2.4.</span> <span class="nav-text">YOLO_Kmeans.kmeans</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-txt2clusters"><span class="nav-number">2.3.2.5.</span> <span class="nav-text">YOLO_Kmeans.txt2clusters</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-result2txt"><span class="nav-number">2.3.2.6.</span> <span class="nav-text">YOLO_Kmeans.result2txt</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#YOLO-Kmeans-avg-iou"><span class="nav-number">2.3.2.7.</span> <span class="nav-text">YOLO_Kmeans.avg_iou</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现函数"><span class="nav-number">2.3.3.</span> <span class="nav-text">实现函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读入数据"><span class="nav-number">3.</span> <span class="nav-text">读入数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基础函数-1"><span class="nav-number">3.0.1.</span> <span class="nav-text">基础函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#get-random-data"><span class="nav-number">3.0.1.1.</span> <span class="nav-text">get_random_data</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#preprocess-true-boxes"><span class="nav-number">3.0.1.2.</span> <span class="nav-text">preprocess_true_boxes</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现函数-1"><span class="nav-number">3.0.2.</span> <span class="nav-text">实现函数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#data-generator-wrapper"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">data_generator_wrapper</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#data-generator"><span class="nav-number">3.0.2.2.</span> <span class="nav-text">data_generator</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">刘之帅</p>
+  <div class="site-description" itemprop="description">刘之帅的个人博客</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘之帅</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
             });
-        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><script>window.addEventListener("load", function () {
-            MathJax.Hub.Config({
-                'HTML-CSS': {
-                    matchFontHeight: false
-                },
-                SVG: {
-                    matchFontHeight: false
-                },
-                CommonHTML: {
-                    matchFontHeight: false
-                },
-                tex2jax: {
-                    inlineMath: [
-                        ['$','$'],
-                        ['\\(','\\)']
-                    ]
-                }
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
             });
-        });</script><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
-            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
-        });</script></body></html>
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+  
+
+</body>
+</html>
