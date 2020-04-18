@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言在机器学习领域，通常把标量、向量、矩阵，都称为张量，即将张量分为：  0 维张量，标量 1 维张量，向量 2 维张量，矩阵 …. n 维张量  标量很好表示，就是一个数：  1向量是一组数：  (1,2,3)矩阵是一组向量  ((1,2,3),(4,5,6))同时也可以把矩阵表示成类似表格的形式  \begin{bmatrix} 1 &amp; 2 &amp; 3 \\ 4 &amp; 5 &amp; 6 \end{bmat">
@@ -40,7 +40,7 @@
 <meta property="og:image" content="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/%E5%B9%BB%E7%81%AF%E7%89%8718.PNG">
 <meta property="og:image" content="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/%E5%B9%BB%E7%81%AF%E7%89%8719.PNG">
 <meta property="article:published_time" content="2020-04-16T05:05:31.258Z">
-<meta property="article:modified_time" content="2020-04-17T14:17:27.294Z">
+<meta property="article:modified_time" content="2020-04-18T07:11:37.212Z">
 <meta property="article:author" content="刘之帅">
 <meta property="article:tag" content="多维张量">
 <meta name="twitter:card" content="summary">
@@ -118,6 +118,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -147,11 +148,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -185,7 +213,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          直观理解多维张量的reshape
+          直观理解多维张量的reshape<a href="https://github.com/LogicForeach/blog/tree/master/source/_posts/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pencil"></i></a>
         </h1>
 
         <div class="post-meta">
@@ -202,7 +230,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-17 22:17:27" itemprop="dateModified" datetime="2020-04-17T22:17:27+08:00">2020-04-17</time>
+                <time title="修改时间：2020-04-18 15:11:37" itemprop="dateModified" datetime="2020-04-18T15:11:37+08:00">2020-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -214,7 +242,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -241,7 +283,8 @@
 <script type="math/tex; mode=display">
 ((1,2,3),(4,5,6))</script><p>同时也可以把矩阵表示成类似表格的形式</p>
 <script type="math/tex; mode=display">
-\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}</script><p>3 维张量可以表示为一组矩阵</p>
+\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}</script><a id="more"></a>
+<p>3 维张量可以表示为一组矩阵</p>
 <script type="math/tex; mode=display">
 (((1,2,3),(4,5,6)),((7,8,9),(10,11,12)))</script><p>这样看上去不是很直观，但当维度大于 2 以后，也无法用表格直观表示了，这里我推荐使用树状表示法</p>
 <p><img src="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/幻灯片1.PNG" alt></p>
@@ -249,7 +292,6 @@
 <p>几乎所有机器学习框架，都会给张量分配一个名为 <code>shape</code> 的属性，该属性直译为形状，表示张量每个维度的“长度”，如上面的这个张量的<code>shape=(2,2,3)</code> 每个维度的“长度”决定了最大索引号是多少，如第一维的长度 2 ，则第一维度的最大索引号只能到 1，同时分量个数等于各维度长度之积，如上图张量中的分量数目为 <code>2*2*3=12</code></p>
 <p>伴随着 <code>shape</code> 属性的出现，随之而来的就是 <code>reshape</code> 方法，<code>reshape</code> 方法可以改变一个张量维度数目和维度长度。</p>
 <p>但是张量维度也不是想怎么改变就怎么改变的，不论你是几维张量，在数据结构上，说到底也不过是一个多维数组，多维数组本身就是一个逻辑结构，实际在内存中，它其实是一个元素接一个元素的线性储存的，所以原则上，无论一个张量 <code>shape</code> 怎么改变，它的分量个数都是不变的，而且它的分量在内存中的存储顺序也是不变的。</p>
-<a id="more"></a>
 <h2 id="如何直观理解多维张量的-reshape-方法"><a href="#如何直观理解多维张量的-reshape-方法" class="headerlink" title="如何直观理解多维张量的 reshape 方法"></a>如何直观理解多维张量的 reshape 方法</h2><p>假设给定一个多维张量，将它表示为下图</p>
 <p><img src="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/幻灯片1.PNG" alt></p>
 <p>这是一张树状图，<strong><code>Tensor</code> 和其后的每一个圆圈都是一个结点</strong>，最后一列的所有结点代表张量中的每一个分量，其后紧跟的方块表示分量中的数值，前三列中每一列对应一个维度，<strong>每一列结点的出度就是该列对应维度的长度</strong>，</p>
@@ -458,6 +500,18 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">刘之帅</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">86k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:18</span>
 </div>
 
         
@@ -494,6 +548,10 @@
   
 
 
+
+
+  
+<script src="/js/local-search.js"></script>
 
 
 

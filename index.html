@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"logicforeach.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="正在积极接受治疗的重度懒癌患者……">
@@ -102,6 +102,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -131,11 +132,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -192,7 +220,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -203,11 +245,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/17/Hexo%20Next%E4%B8%BB%E9%A2%98%20%E8%A7%A3%E5%86%B3%E5%85%AC%E5%BC%8F%E5%9D%97%E4%B8%AD%E5%85%AC%E5%BC%8F%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>公式块内公式不能换行。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/17/Hexo%20Next%E4%B8%BB%E9%A2%98%20%E8%A7%A3%E5%86%B3%E5%85%AC%E5%BC%8F%E5%9D%97%E4%B8%AD%E5%85%AC%E5%BC%8F%E6%8D%A2%E8%A1%8C%E9%97%AE%E9%A2%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -265,7 +311,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -332,7 +392,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-17 22:17:27" itemprop="dateModified" datetime="2020-04-17T22:17:27+08:00">2020-04-17</time>
+                <time title="修改时间：2020-04-18 15:11:37" itemprop="dateModified" datetime="2020-04-18T15:11:37+08:00">2020-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -344,7 +404,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -355,11 +429,31 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在机器学习领域，通常把标量、向量、矩阵，都称为张量，即将张量分为：</p>
+<ul>
+<li>0 维张量，标量</li>
+<li>1 维张量，向量</li>
+<li>2 维张量，矩阵</li>
+<li>….</li>
+<li>n 维张量</li>
+</ul>
+<p>标量很好表示，就是一个数：</p>
+<script type="math/tex; mode=display">
+1</script><p>向量是一组数：</p>
+<script type="math/tex; mode=display">
+(1,2,3)</script><p>矩阵是一组向量</p>
+<script type="math/tex; mode=display">
+((1,2,3),(4,5,6))</script><p>同时也可以把矩阵表示成类似表格的形式</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}</script>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/16/%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3%E5%A4%9A%E7%BB%B4%E5%BC%A0%E9%87%8F%E7%9A%84reshape/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -417,7 +511,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>264</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -428,11 +536,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h2 id="Smooth-L1-Loss"><a href="#Smooth-L1-Loss" class="headerlink" title="Smooth L1 Loss"></a>Smooth L1 Loss</h2><h3 id="函数定义与性质："><a href="#函数定义与性质：" class="headerlink" title="函数定义与性质："></a>函数定义与性质：</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><script type="math/tex; mode=display">
+smoothL1(x) = \left\{ \begin{aligned} 0.5x^{2}    \qquad if \left| x \right| < 1\\ \left| x \right| - 0.5  \qquad otherswise,  \\ \end{aligned} \right.</script><h4 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h4><ul>
+<li>连续函数，在 x=±1 处连续</li>
+<li>偶函数，关于 x=0 对称</li>
+<li>x=0 处取唯一极小值 0</li>
+</ul>
+<h3 id="导数定义与性质："><a href="#导数定义与性质：" class="headerlink" title="导数定义与性质："></a>导数定义与性质：</h3><h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h4><script type="math/tex; mode=display">
+\frac{d[smoothL1(x)]}{x}= \left\{ \begin{aligned} x \qquad if \left| x \right| <1\\ \pm1  \qquad otherswise,  \\ \end{aligned} \right.</script><h4 id="性质-1"><a href="#性质-1" class="headerlink" title="性质"></a>性质</h4><ul>
+<li>导函数连续</li>
+<li>在 x 较小时，对 x 的梯度也会变小，而在 x 很大时，对 x 的梯度为 1 ，总之 x 梯度绝对值最大为 1 </li>
+</ul>
+<h3 id="来源："><a href="#来源：" class="headerlink" title="来源："></a>来源：</h3><p>在 Faster RCNN 用于对 （x，y，w，h）进行回归：</p>
+<script type="math/tex; mode=display">
+L_{reg}(t_i,t_i^*)=smoothL1(t_i-t_i^*)
+\\t_i=(x_i,y_i,w_i,h_i)
+\\t_i^*=(x_i^*,y_i^*,w_i^*,h_i^*)</script><h3 id="优缺点分析："><a href="#优缺点分析：" class="headerlink" title="优缺点分析："></a>优缺点分析：</h3><h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>相较于平方误差， Smooth L1 Loss 的在预测值与标签值相差较大时，梯度被稳定为 1，这样不会让那些少量离群点贡献较大的梯度，令整个梯度下降方向，向那些错误的点倾斜。</li>
+<li>相较于绝对值误差，Smooth L1 Loss 在 0 点处可导，且预测值与真实值相差的越小，梯度也越小，这将有利于模型收敛</li>
+<li>…..（待补充）</li>
+</ul>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>在目标识别时，（x，y，w，h）的回归损失采用加和方式组合在一起，使得（x，y，w，h）的损失彼此独立，导致 loss 虽然看起来不错，但是（x，y，w，h）四项的回归损失有高有低，这种情况下的结果通常最终效果的评价都不是很好（最终效果的评价采用 IOU 作为标准）。</li>
+<li>目标识别时，使用 Smooth L1 Loss 的话，大边框的 loss 和小边框的 loss 并不能同等比较，相同 loss 值的情况下，大边框（100*100）的宽和高差2个像素点，肯定比小边框（10*10）的宽和高差2个像素点效果要好，但是 Smooth L1 Loss 中没有考虑边框大小这个问题，在 YOLO 中，作者使用平方根函数缓解这个问题，可这个问题依旧存在。换句话说就是  Smooth L1 Loss 不具有尺度不变形</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/14/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -496,7 +631,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -507,11 +656,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/05/%E5%85%B3%E4%BA%8E%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h2 id="矩阵微分"><a href="#矩阵微分" class="headerlink" title="矩阵微分"></a>矩阵微分</h2><blockquote>
+<p>为了书写方便，常把单个函数对多个变量或者多元函数对单个变量的偏导数写成向量或者矩阵的形式，使其可以当做一个整体处理。矩阵微积分是多元微积分的一种表达方式，即可以使用矩阵和向量来表示因变量每个成分关于自变量每个成分的偏导数。 ——《神经网络与深度学习》</p>
+</blockquote>
+<p>对这句话的理解：</p>
+<ol>
+<li><p>矩阵微分是多元函数求导的一种书写行书，它的结果是各个偏导数的按照某一规定的布局。</p>
+</li>
+<li><p>矩阵微分的结果是一个矩阵或者向量，它内部一定包含 <strong>因变量里每一个成分关于自变量里每一个分量的偏导数</strong> ，即</p>
+<script type="math/tex; mode=display">
+ \frac{\partial{\pmb{Y}}}{\partial{\pmb{X}}}=
+  \left[
+  \begin{matrix}
+     &  &  \\
+     & \frac{\partial y_i}{\partial x_j} &  \\
+    &  & 
+   \end{matrix}
+   \right]\\
+   y_i\in\pmb{Y},x_j\in\pmb{X}</script></li>
+<li><p>这里的 $\frac{\partial y_i}{\partial x_j}$ 是一个代表元素， 下标 $i$ 和 $j$ 也可以理解为在分母布局下的第 $i$ 行、第 $j$ 列 ; 在分子布局下的第 $i$ 列、第 $j$ 行，关于分子布局分母布局见下面。</p>
+</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/05/%E5%85%B3%E4%BA%8E%E7%9F%A9%E9%98%B5%E6%B1%82%E5%AF%BC%E7%9A%84%E7%90%86%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -575,7 +748,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -654,7 +841,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -665,11 +866,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h2 id="参数学习"><a href="#参数学习" class="headerlink" title="参数学习"></a>参数学习</h2><h3 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h3><p>Keras 源码中的损失函数：</p>
+<script type="math/tex; mode=display">
+loss(object)=-\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [\hat x_ilog(x_i)+(1-\hat x_i)log(1-x_i)]-\\ 
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [\hat y_ilog(y_i)+(1-\hat y_i)log(1-y_i)]+\\ 
+0.5 \cdot \sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [(w_i-\hat w_i)^2+(h_i-\hat h_i)^2]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot [\hat C_ilog(C_i)+(1-\hat C_i)log(1-C_i)]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{noobj} \cdot [\hat C_ilog(C_i)+(1-\hat C_i)log(1-C_i)]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M \sum_{c \in classes} I_{ij}^{obj} \cdot [\hat p_i(c)log(p_i(c))+(1-\hat p_i(c))log(1-(p_i(c))]\\</script><p>$K \times K$ 是网格数目，$M$ 是每个网格锚框数目，$I_{ij}^{obj}$ 表示 <code>i</code> 号 网格中 <code>j</code> 号锚框是否负责物体，所谓负责物体就是指是否有物体的中心落到这个锚框，如果有物体就落入则值，没物体落入则值为0。$w_i,h_i,x_i,y_i$ 表示网络预测的盒子长宽和中心位置，戴帽子的表示的是真实的长宽和中心位置。$C_i$ 是网络的预测的置信度，带帽是真实置信度。$p_i(c)$ 表示类别为 <code>c</code> 的概率，带帽表示真实概率。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -733,7 +945,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -744,11 +970,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">https://github.com/qqwweee/keras-yolo3</a></p>
+<h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><h3 id="网络结构图"><a href="#网络结构图" class="headerlink" title="网络结构图"></a>网络结构图</h3><p><img src="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg" alt="img"></p>
+<p>图片来自：<a href="https://blog.csdn.net/leviopku/article/details/82660381" target="_blank" rel="noopener">https://blog.csdn.net/leviopku/article/details/82660381</a></p>
+<p>将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：</p>
+<ul>
+<li>conv：卷积层</li>
+<li>DBL： Darknetconv2d_BN_Leaky，conv  + BN + Leaky relu。</li>
+</ul>
+<ul>
+<li>res*：resblock_body， * 是数字，表示内含res_unit数目，有res1，res2, … ,res8等等</li>
+<li>res_unit ： 借鉴残差网络思想，将特征值 $\pmb x$ 与经过两个 DBL 的净输入值 $\pmb z$ 相加作为最终净输入。</li>
+</ul>
+<p>操作：</p>
+<ul>
+<li>concat：张量拼接，即<code>tf.concat</code>，会使最后一个维度变长。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -812,7 +1057,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>18k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>17 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -823,11 +1082,26 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">https://github.com/qqwweee/keras-yolo3</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文从主要是从源码层面对 YOLO3 的数据处理相关内容进行分析与讲解。通常，一个功能的实现需要多个函数配合，所以我将每个功能的实现函数分为两部分，<strong>基础函数</strong> 和 <strong>实现函数</strong> ：</p>
+<ul>
+<li>基础函数：被实现函数所依赖，是实现函数的一部分</li>
+<li>实现函数：通过调用基础函数实现功能</li>
+</ul>
+<p>源码内容比较多，通过目录索引看感兴趣的地方即可。</p>
+<h2 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h2><h3 id="数据集转换"><a href="#数据集转换" class="headerlink" title="数据集转换"></a>数据集转换</h3><p>YOLO3 Keras 源码所需要的数据集应该在一个<code>.txt</code> ( 文本文件 )内，文件中的一行代表一个张图片和它的标签，其中每行的格式为：</p>
+<figure class="highlight armasm"><table><tr><td class="code"><pre><span class="line"><span class="symbol">image_file_path</span> <span class="keyword">box1 </span><span class="keyword">box2 </span>... <span class="keyword">boxN</span></span><br></pre></td></tr></table></figure>
+<p><code>box*</code> 是该图片的标签，即真实框，不同box之间用空格隔开，其中每个box的格式为</p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"><span class="built_in">x_min,</span>y_min,x_max,y_max,class_id</span><br></pre></td></tr></table></figure>
+<p>所以总的来说，训练用的数据集应该大体是这个样子的：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -891,7 +1165,21 @@
                 </span>
             </span>
 
-          
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>20k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>18 分钟</span>
+            </span>
 
         </div>
       </header>
@@ -902,11 +1190,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <div class="post-button">
-            <a class="btn" href="/2020/04/04/YOLO3%20%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%8E%E6%80%A7%E8%83%BD%E8%AF%84%E4%BB%B7%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
+          <h2 id="使用-YOLO3"><a href="#使用-YOLO3" class="headerlink" title="使用 YOLO3"></a>使用 YOLO3</h2><h3 id="配置-yolo-py"><a href="#配置-yolo-py" class="headerlink" title="配置 yolo.py"></a>配置 yolo.py</h3><p>修改 <code>yolo.py</code> 的 <code>_defaults</code>，主要是把自己训练好的权重文件路径、锚框文件路径、类别文件路径配置上。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">_defaults = &#123;</span><br><span class="line">      <span class="string">"model_path"</span>: <span class="string">'trained_weights_final.h5'</span>,</span><br><span class="line">      <span class="string">"anchors_path"</span>: <span class="string">'yolo_anchors.txt'</span>,</span><br><span class="line">      <span class="string">"classes_path"</span>: <span class="string">'voc_classes.txt'</span>,</span><br><span class="line">      <span class="string">"score"</span> : <span class="number">0.3</span>,</span><br><span class="line">      <span class="string">"iou"</span> : <span class="number">0.45</span>,</span><br><span class="line">      <span class="string">"model_image_size"</span> : (<span class="number">416</span>, <span class="number">416</span>),</span><br><span class="line">      <span class="string">"gpu_num"</span> : <span class="number">1</span>,</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="运行-yolo-video-py"><a href="#运行-yolo-video-py" class="headerlink" title="运行 yolo_video.py"></a>运行 yolo_video.py</h3><p><code>python yolo_video.py --image</code> 对单张图片进行测试，<code>python yolo_video.py --video</code> 对视频进行测试。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%8E%E6%80%A7%E8%83%BD%E8%AF%84%E4%BB%B7%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1048,6 +1342,18 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">刘之帅</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">86k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:18</span>
 </div>
 
         
@@ -1084,6 +1390,10 @@
   
 
 
+
+
+  
+<script src="/js/local-search.js"></script>
 
 
 
