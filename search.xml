@@ -4,6 +4,60 @@
   
     
     <entry>
+      <title>使用高阶导数公式求复杂导数</title>
+      <link href="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/"/>
+      <url>/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/</url>
+      
+        <content type="html"><![CDATA[<h2 id="使用高阶导数公式求复杂导数"><a href="#使用高阶导数公式求复杂导数" class="headerlink" title="使用高阶导数公式求复杂导数"></a>使用高阶导数公式求复杂导数</h2><p>对f(x)变形，使之化为</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image002.gif" alt="img"></p><p>其中g(x)导数为有限项，c为常数</p><p>此时使用高阶导数公式</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image004.gif" alt="img"></p><p>由于</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image006.gif" alt="img"></p><p>为有限项，故可得递推式</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image008.gif" alt="img"></p><p>若f(x)无法化成上述形式，可考虑对其一阶导数、二阶导数进行变形。</p><p>例:</p><p>已知</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image010.gif" alt="img"></p><p>求</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image012.gif" alt="img"></p><p>解：</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0%E5%85%AC%E5%BC%8F%E6%B1%82%E5%A4%8D%E6%9D%82%E5%AF%BC%E6%95%B0/clip_image014.gif" alt="img"></p><p>通过上述递推式可解</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 考研数学 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 泰勒公式 </tag>
+            
+            <tag> 高阶导数 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>使用泰勒公式求高阶导数</title>
+      <link href="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/"/>
+      <url>/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/</url>
+      
+        <content type="html"><![CDATA[<p><strong>使用泰勒公式求高阶导数</strong></p><p>写出f(x)泰勒展开的抽象公式</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image002.gif" alt="img"></p><p>写出部分因式的具体展开，形如：</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image004.gif" alt="img"></p><p>其中，P(x-a)表示关于x-a的无穷次多项式，g(a)是常数，所以最终结果也是关于(x-a)的无穷次多项式，系数为bn</p><p>由于泰勒展开具有唯一性，故下式恒成立</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image006.gif" alt="img"></p><p>由待定系数法法，可求抽象公式中x-a的n次项前的系数，即</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image008.gif" alt="img"></p><p>例：</p><p>已知</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image010.gif" alt="img"></p><p>求</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image012.gif" alt="img"></p><p>解：</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image014.gif" alt="img"></p><p>当泰勒展开不在0点是，可通过变形，使之变为关于x-a的函数，令其在0 点展开，例如：</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image016.gif" alt="img"></p><p>解</p><p><img src="/2020/05/02/%E4%BD%BF%E7%94%A8%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E6%B1%82%E9%AB%98%E9%98%B6%E5%AF%BC%E6%95%B0/clip_image018.gif" alt="img"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 考研数学 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 泰勒公式 </tag>
+            
+            <tag> 高阶导数 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>记忆仓库-使用指南</title>
       <link href="/2020/04/25/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/"/>
       <url>/2020/04/25/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/</url>

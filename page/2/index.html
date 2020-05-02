@@ -184,6 +184,222 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="logicforeach.github.io/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/LOGO.jpg">
+      <meta itemprop="name" content="刘之帅">
+      <meta itemprop="description" content="正在积极接受治疗的重度懒癌患者……">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LogicForeach">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">YOLO3 参数学习 Keras源码分析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-04 19:00:09" itemprop="dateCreated datePublished" datetime="2020-04-04T19:00:09+08:00">2020-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-14 16:19:45" itemprop="dateModified" datetime="2020-04-14T16:19:45+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">YOLO3 源码分析</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="参数学习"><a href="#参数学习" class="headerlink" title="参数学习"></a>参数学习</h2><h3 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h3><p>Keras 源码中的损失函数：</p>
+<script type="math/tex; mode=display">
+loss(object)=-\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [\hat x_ilog(x_i)+(1-\hat x_i)log(1-x_i)]-\\ 
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [\hat y_ilog(y_i)+(1-\hat y_i)log(1-y_i)]+\\ 
+0.5 \cdot \sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot (2-w_i\times h_i) \cdot [(w_i-\hat w_i)^2+(h_i-\hat h_i)^2]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{obj} \cdot [\hat C_ilog(C_i)+(1-\hat C_i)log(1-C_i)]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M I_{ij}^{noobj} \cdot [\hat C_ilog(C_i)+(1-\hat C_i)log(1-C_i)]-\\
+\sum_{i=0}^{K\times K}\sum_{j=0}^M \sum_{c \in classes} I_{ij}^{obj} \cdot [\hat p_i(c)log(p_i(c))+(1-\hat p_i(c))log(1-(p_i(c))]\\</script><p>$K \times K$ 是网格数目，$M$ 是每个网格锚框数目，$I_{ij}^{obj}$ 表示 <code>i</code> 号 网格中 <code>j</code> 号锚框是否负责物体，所谓负责物体就是指是否有物体的中心落到这个锚框，如果有物体就落入则值，没物体落入则值为0。$w_i,h_i,x_i,y_i$ 表示网络预测的盒子长宽和中心位置，戴帽子的表示的是真实的长宽和中心位置。$C_i$ 是网络的预测的置信度，带帽是真实置信度。$p_i(c)$ 表示类别为 <code>c</code> 的概率，带帽表示真实概率。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E5%8F%82%E6%95%B0%E5%AD%A6%E4%B9%A0%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="logicforeach.github.io/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/LOGO.jpg">
+      <meta itemprop="name" content="刘之帅">
+      <meta itemprop="description" content="正在积极接受治疗的重度懒癌患者……">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LogicForeach">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">YOLO3 网络结构 Keras源码分析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-04 19:00:08" itemprop="dateCreated datePublished" datetime="2020-04-04T19:00:08+08:00">2020-04-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-14 16:20:06" itemprop="dateModified" datetime="2020-04-14T16:20:06+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/YOLO3-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">YOLO3 源码分析</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>YOLO3 Keras 源码：<a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">https://github.com/qqwweee/keras-yolo3</a></p>
+<h2 id="网络结构"><a href="#网络结构" class="headerlink" title="网络结构"></a>网络结构</h2><h3 id="网络结构图"><a href="#网络结构图" class="headerlink" title="网络结构图"></a>网络结构图</h3><p><img src="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/2018100917221176.jpg" alt="img"></p>
+<p>图片来自：<a href="https://blog.csdn.net/leviopku/article/details/82660381" target="_blank" rel="noopener">https://blog.csdn.net/leviopku/article/details/82660381</a></p>
+<p>将 YOLO3 网络结构划分为多个层和层包，下面的各个层包的解释：</p>
+<ul>
+<li>conv：卷积层</li>
+<li>DBL： Darknetconv2d_BN_Leaky，conv  + BN + Leaky relu。</li>
+</ul>
+<ul>
+<li>res*：resblock_body， * 是数字，表示内含res_unit数目，有res1，res2, … ,res8等等</li>
+<li>res_unit ： 借鉴残差网络思想，将特征值 $\pmb x$ 与经过两个 DBL 的净输入值 $\pmb z$ 相加作为最终净输入。</li>
+</ul>
+<p>操作：</p>
+<ul>
+<li>concat：张量拼接，即<code>tf.concat</code>，会使最后一个维度变长。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/04/YOLO3%20%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="logicforeach.github.io/2020/04/04/YOLO3%20%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%20Keras%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -458,7 +674,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -471,7 +687,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -531,7 +747,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">96k</span>
+    <span title="站点总字数">97k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
